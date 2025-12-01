@@ -50,6 +50,7 @@ export default function EventForm() {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const [eventoCriadoId, setEventoCriadoId] = useState<string | null>(null);
   const [showSectionModal, setShowSectionModal] = useState(false);
   const [currentSection, setCurrentSection] = useState<Secao>({
     id: '',
@@ -310,6 +311,9 @@ export default function EventForm() {
       setLoading(false);
 
       if (response.ok) {
+        const responseBody = (await response.json()) as {id: string}
+        console.log('responseBody: ', responseBody)
+        setEventoCriadoId(responseBody.id)
         setMessage({
           type: 'success',
           text: 'Evento criado com sucesso! O formulário será gerado em breve.'
@@ -816,6 +820,12 @@ export default function EventForm() {
           </div>
         </div>
       </div>
+
+      
+      {eventoCriadoId && <div>
+        <h2>Detalhes do evento criado</h2>
+        <a href={`/evento/${eventoCriadoId}`}>Abrir</a>
+      </div>}
 
       {/* Modal de Seção */}
       {showSectionModal && (
