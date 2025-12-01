@@ -34,7 +34,7 @@ interface FormData {
   secoes: Secao[];
 }
 
-export default function EventForm() {
+export default function CadastrarAcaoPage() {
   const [formData, setFormData] = useState<FormData>({
     nomeEvento: '',
     departamento: '',
