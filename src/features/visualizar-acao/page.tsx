@@ -23,5 +23,5 @@ const InnerVisualizarAcaoPage: FC = () => {
   if (!acao) {
     return <div>Ação não encontrada</div>;
   }
-  return <AcaoRender acao={acao} />;
+  return <AcaoRender />;
 };
