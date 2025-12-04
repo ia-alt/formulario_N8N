@@ -7,24 +7,22 @@ import {
   Badge,
   type TableColumnsType,
   Typography,
-  Modal,
-  QRCode,
-  Flex,
 } from "antd";
 import { useState, type FC } from "react";
-import type { Inscrito } from "../../types";
 import { useVisualizarAcao } from "../../hook";
-import { BarsOutlined, LinkOutlined, CopyOutlined } from "@ant-design/icons";
-import TextArea from "antd/es/input/TextArea";
-import { useCopyToClipboard } from "../../../../helpers/use-copy-to-clipboard";
+import { BarsOutlined, LinkOutlined } from "@ant-design/icons";
+import { ModalLinkDeInscricao } from "./modal-link-de-inscricao";
+import { ModalChamada } from "../../../chamada/components/modal-chamada";
+import type { Inscrito } from "../../../../shared/types";
 
 const { Text } = Typography;
 
 export const ListaDeInscritos: FC = () => {
-  const { acao } = useVisualizarAcao();
-  const copyToClipboard = useCopyToClipboard();
+  const { acao, updateInscritos } = useVisualizarAcao();
   const [modalLinkDeInscricaoOpen, setModalLinkDeInscricaoOpen] =
     useState(false);
+
+  const modalChamadaRef = ModalChamada.useRef();
 
   const columns: TableColumnsType<Inscrito> = [
     {
@@ -52,14 +50,19 @@ export const ListaDeInscritos: FC = () => {
   return (
     <>
       <Card
-        title="Inscritos"
+        title={`Inscritos (${acao.inscritos.length})`}
         variant={"outlined"}
         extra={
           <Space>
-            <Button>
+            <Button
+              onClick={() =>
+                modalChamadaRef.current?.open(acao.id, acao.inscritos)
+              }
+            >
               <BarsOutlined />
               Chamada
             </Button>
+
             <Button
               type="primary"
               onClick={() => setModalLinkDeInscricaoOpen(true)}
@@ -74,7 +77,7 @@ export const ListaDeInscritos: FC = () => {
           dataSource={acao.inscritos}
           columns={columns}
           rowKey={(record: Inscrito) => record.nome}
-          pagination={{ pageSize: 5, size: "small" }}
+          pagination={false}
           size="small"
           scroll={{ x: true }} // Responsividade para mobile
           expandable={{
@@ -94,44 +97,13 @@ export const ListaDeInscritos: FC = () => {
           }}
         />
       </Card>
-      <Modal
-        title="Link de Inscrição"
+
+      <ModalLinkDeInscricao
         open={modalLinkDeInscricaoOpen}
-        onCancel={() => setModalLinkDeInscricaoOpen(false)}
-        footer={null}
-      >
-        <Flex gap={16} orientation="vertical" align="center">
-          <QRCode value={acao.linkFormularioInscricao} />
+        setOpen={setModalLinkDeInscricaoOpen}
+      />
 
-          <TextArea
-            value={acao.linkFormularioInscricao}
-            autoSize={{ minRows: 1, maxRows: 6 }}
-          />
-
-          <Space>
-            <Button
-              onClick={() =>
-                copyToClipboard(
-                  acao.linkFormularioInscricao,
-                  "Link de inscrição copiado!"
-                )
-              }
-            >
-              <CopyOutlined />
-              Copiar URL
-            </Button>
-            <Button
-              type="link"
-              href={acao.linkFormularioInscricao}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <LinkOutlined />
-              Abrir Página
-            </Button>
-          </Space>
-        </Flex>
-      </Modal>
+      <ModalChamada ref={modalChamadaRef} onSave={updateInscritos} />
     </>
   );
 };

@@ -1,6 +1,13 @@
-import { useEffect, useState, type FC, type PropsWithChildren } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+  type FC,
+  type PropsWithChildren,
+} from "react";
 import { VisualizarAcaoContext, type Acao } from "./types";
 import { visualizarAcaoService } from "./service";
+import type { Inscrito } from "../../shared/types";
 
 export const VisualizarAcaoProvider: FC<PropsWithChildren<{ id: number }>> = ({
   children,
@@ -23,8 +30,24 @@ export const VisualizarAcaoProvider: FC<PropsWithChildren<{ id: number }>> = ({
       });
   }, [id]);
 
+  const updateInscritos = useCallback(
+    (inscritos: Inscrito[]) => {
+      setAcao((acao) =>
+        acao
+          ? {
+              ...acao,
+              inscritos,
+            }
+          : null
+      );
+    },
+    [setAcao]
+  );
+
   return (
-    <VisualizarAcaoContext.Provider value={{ acao, carregando }}>
+    <VisualizarAcaoContext.Provider
+      value={{ acao, carregando, updateInscritos }}
+    >
       {children}
     </VisualizarAcaoContext.Provider>
   );
