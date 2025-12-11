@@ -1,1 +1,1 @@
-export { default as CadastrarAcaoPage } from "./page";
+export * from "./page";
