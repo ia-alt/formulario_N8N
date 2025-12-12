@@ -7,10 +7,17 @@ import {
   Badge,
   type TableColumnsType,
   Typography,
+  Dropdown,
+  type MenuProps,
 } from "antd";
 import { useState, type FC } from "react";
 import { useVisualizarAcao } from "../../hook";
-import { BarsOutlined, LinkOutlined } from "@ant-design/icons";
+import {
+  BarsOutlined,
+  EllipsisOutlined,
+  EyeOutlined,
+  LinkOutlined,
+} from "@ant-design/icons";
 import { ModalLinkDeInscricao } from "./modal-link-de-inscricao";
 import { ModalChamada } from "../../../chamada/components/modal-chamada";
 import type { Inscrito } from "../../../../shared/types";
@@ -44,6 +51,27 @@ export const ListaDeInscritos: FC = () => {
     },
   ];
 
+  const onMenuClick: MenuProps["onClick"] = (e) => {
+    console.log("click", e);
+    if (!acao) return;
+    switch (e.key) {
+      case "planilha_inscritos":
+        window.open(
+          acao.linkPlanilhaInscritos,
+          "_blank",
+          "noopener,noreferrer"
+        );
+        break;
+      case "editar_formulario_inscricao":
+        window.open(
+          acao.linkEditarFormularioInscricao,
+          "_blank",
+          "noopener,noreferrer"
+        );
+        break;
+    }
+  };
+
   if (!acao) {
     return null;
   }
@@ -54,22 +82,54 @@ export const ListaDeInscritos: FC = () => {
         variant={"outlined"}
         extra={
           <Space>
-            <Button
-              onClick={() =>
-                modalChamadaRef.current?.open(acao.id, acao.inscritos)
-              }
-            >
-              <BarsOutlined />
-              Chamada
-            </Button>
+            {acao.status === "ATIVA" ? (
+              <>
+                <Button
+                  onClick={() =>
+                    modalChamadaRef.current?.open(acao.id, acao.inscritos)
+                  }
+                >
+                  <BarsOutlined />
+                  Chamada
+                </Button>
 
-            <Button
-              type="primary"
-              onClick={() => setModalLinkDeInscricaoOpen(true)}
-            >
-              <LinkOutlined />
-              Inscrição
-            </Button>
+                <Space.Compact>
+                  <Button onClick={() => setModalLinkDeInscricaoOpen(true)}>
+                    <LinkOutlined />
+                    Inscrição
+                  </Button>
+
+                  <Dropdown
+                    trigger={["click"]}
+                    menu={{
+                      items: [
+                        {
+                          key: "planilha_inscritos",
+                          label: "Visualizar Planilha de Inscritos",
+                        },
+                        {
+                          key: "editar_formulario_inscricao",
+                          label: "Editar Formuário de Inscrição",
+                        },
+                      ],
+                      onClick: onMenuClick,
+                    }}
+                    placement="bottomRight"
+                  >
+                    <Button icon={<EllipsisOutlined />} />
+                  </Dropdown>
+                </Space.Compact>
+              </>
+            ) : (
+              <Button
+                href={acao.linkPlanilhaInscritos}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <EyeOutlined />
+                Planilha de Inscritos
+              </Button>
+            )}
           </Space>
         }
       >

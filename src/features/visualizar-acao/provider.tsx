@@ -1,6 +1,7 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useState,
   type FC,
   type PropsWithChildren,
@@ -44,10 +45,65 @@ export const VisualizarAcaoProvider: FC<PropsWithChildren<{ id: string }>> = ({
     [setAcao]
   );
 
+  const cancelarAcao = useCallback(() => {
+    if (!acao) return;
+    setCarregando(true);
+    visualizarAcaoService
+      .cancelarAcao(acao.id)
+      .then(() => {
+        setAcao((acao) =>
+          acao
+            ? {
+                ...acao,
+                status: "CANCELADA",
+              }
+            : null
+        );
+      })
+      .catch((e) => {
+        console.log(e);
+      })
+      .finally(() => {
+        setCarregando(false);
+      });
+  }, [acao]);
+
+  const finalizarAcao = useCallback(() => {
+    if (!acao) return;
+    setCarregando(true);
+    visualizarAcaoService
+      .finalizarAcao(acao.id)
+      .then(() => {
+        setAcao((acao) =>
+          acao
+            ? {
+                ...acao,
+                status: "CONCLUIDA",
+              }
+            : null
+        );
+      })
+      .catch((e) => {
+        console.log(e);
+      })
+      .finally(() => {
+        setCarregando(false);
+      });
+  }, [acao]);
+
+  const value = useMemo(
+    () => ({
+      acao,
+      carregando,
+      updateInscritos,
+      cancelarAcao,
+      finalizarAcao,
+    }),
+    [acao, carregando, updateInscritos, cancelarAcao, finalizarAcao]
+  );
+
   return (
-    <VisualizarAcaoContext.Provider
-      value={{ acao, carregando, updateInscritos }}
-    >
+    <VisualizarAcaoContext.Provider value={value}>
       {children}
     </VisualizarAcaoContext.Provider>
   );

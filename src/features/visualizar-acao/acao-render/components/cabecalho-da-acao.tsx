@@ -1,8 +1,25 @@
-import { Card, Row, Col, Statistic, Space, Tag, Typography } from "antd";
+import {
+  Card,
+  Row,
+  Col,
+  Statistic,
+  Space,
+  Tag,
+  Typography,
+  Button,
+  Dropdown,
+  type MenuProps,
+  App,
+} from "antd";
 import type { FC } from "react";
 import type { StatusAcao } from "../../types";
 import { useVisualizarAcao } from "../../hook";
-import { TeamOutlined, BookOutlined } from "@ant-design/icons";
+import {
+  TeamOutlined,
+  BookOutlined,
+  EllipsisOutlined,
+  CalendarOutlined,
+} from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 
@@ -21,7 +38,41 @@ const getStatusTag = (status: StatusAcao) => {
 };
 
 export const CabecalhoDaAcao: FC = () => {
-  const { acao } = useVisualizarAcao();
+  const { acao, cancelarAcao, finalizarAcao } = useVisualizarAcao();
+  const { modal } = App.useApp();
+
+  const onMenuClick: MenuProps["onClick"] = (e) => {
+    console.log("click", e);
+    if (!acao) return;
+    switch (e.key) {
+      case "concluir_acao":
+        modal.confirm({
+          title: "Concluir Ação",
+          content: "Antes de prosseguir garanta que a Chamada foi feita.",
+          cancelText: "Cancelar",
+          okText: "Concluir",
+          onOk: () => {
+            finalizarAcao();
+          },
+          onCancel: () => {
+            cancelarAcao();
+          },
+        });
+        break;
+      case "cancelar_acao":
+        modal.confirm({
+          title: "Cancelar Ação",
+          content: "Você tem certeza que deseja cancelar esta ação?",
+          cancelText: "Não, mudei de ideia",
+          okText: "Sim, cancelar",
+          onOk: () => {
+            cancelarAcao();
+          },
+        });
+        break;
+    }
+  };
+
   if (!acao) {
     return null;
   }
@@ -32,9 +83,49 @@ export const CabecalhoDaAcao: FC = () => {
           <Space orientation="vertical" size={0}>
             <Space>
               {getStatusTag(acao.status)}
-              <Text type="secondary">#{acao.id}</Text>
               <Tag color="blue">{acao.tipo}</Tag>
+              <Text type="secondary">#{acao.id}</Text>
             </Space>
+          </Space>
+        </Col>
+        <Col>
+          <Space>
+            <Button
+              href={acao.linkGoogleCalendar}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <CalendarOutlined />
+              Abrir no Calendar
+            </Button>
+            {acao?.status === "ATIVA" && (
+              <Dropdown
+                trigger={["click"]}
+                menu={{
+                  items: [
+                    {
+                      key: "concluir_acao",
+                      label: "Concluir Ação",
+                    },
+                    {
+                      key: "cancelar_acao",
+                      label: "Cancelar Ação",
+                      danger: true,
+                    },
+                  ],
+                  onClick: onMenuClick,
+                }}
+                placement="bottomRight"
+              >
+                <Button icon={<EllipsisOutlined />}>Opções</Button>
+              </Dropdown>
+            )}
+          </Space>
+        </Col>
+      </Row>
+      <Row gutter={[16, 16]} align="middle" justify="space-between">
+        <Col>
+          <Space orientation="vertical" size={0}>
             <Title level={2} style={{ margin: "8px 0" }}>
               {acao.titulo}
             </Title>

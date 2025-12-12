@@ -8,7 +8,14 @@ export const AcaoRender: FC = () => {
   return (
     <Layout>
       <Layout.Content>
-        <div style={{ padding: "24px", maxWidth: "900px", margin: "0 auto" }}>
+        <div
+          style={{
+            padding: "24px",
+            maxWidth: "900px",
+            margin: "0 auto",
+            minHeight: "100vh",
+          }}
+        >
           <CabecalhoDaAcao />
 
           <Space
