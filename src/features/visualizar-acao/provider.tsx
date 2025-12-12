@@ -9,7 +9,7 @@ import { VisualizarAcaoContext, type Acao } from "./types";
 import { visualizarAcaoService } from "./service";
 import type { Inscrito } from "../../shared/types";
 
-export const VisualizarAcaoProvider: FC<PropsWithChildren<{ id: number }>> = ({
+export const VisualizarAcaoProvider: FC<PropsWithChildren<{ id: string }>> = ({
   children,
   id,
 }) => {

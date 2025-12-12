@@ -6,10 +6,8 @@ import type { FC } from "react";
 
 export default function VisualizarAcaoPage() {
   const id = (useParams() as { id: string }).id;
-  const idNumber = parseInt(id);
-  console.log(idNumber);
   return (
-    <VisualizarAcaoProvider id={idNumber}>
+    <VisualizarAcaoProvider id={id}>
       <InnerVisualizarAcaoPage />
     </VisualizarAcaoProvider>
   );
