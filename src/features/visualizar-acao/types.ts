@@ -8,8 +8,8 @@ export type Acao = {
   status: StatusAcao;
   eixo: string;
   titulo: string;
-  descricao: string;
   local: string;
+  municipio: string;
   tipo: string; // palestra, oficina, minicurso, roda de conversa
   cargaHoraria: number;
   data: string; // YYYY-MM-DD
@@ -21,8 +21,8 @@ export type Acao = {
   inscritos: Inscrito[];
 };
 
-export interface VisualizarAcaoService {
-  getAcao(id: number): Promise<Acao | null>;
+export interface IVisualizarAcaoService {
+  getAcao(id: string): Promise<Acao | null>;
 }
 
 export interface IVisualizarAcaoContext {

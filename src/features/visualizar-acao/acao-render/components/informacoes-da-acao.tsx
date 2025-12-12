@@ -1,4 +1,4 @@
-import { Card, Typography, Descriptions } from "antd";
+import { Card, Descriptions } from "antd";
 import type { FC } from "react";
 import { useVisualizarAcao } from "../../hook";
 import {
@@ -6,7 +6,6 @@ import {
   ClockCircleOutlined,
   EnvironmentOutlined,
 } from "@ant-design/icons";
-const { Paragraph } = Typography;
 
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString("pt-BR", {
@@ -24,12 +23,6 @@ export const InformacoesDaAcao: FC = () => {
   }
   return (
     <>
-      <Card>
-        <Paragraph style={{ marginBottom: 0 }}>{acao.descricao}</Paragraph>
-      </Card>
-
-      {/* Coluna Esquerda: Detalhes */}
-
       <Card>
         <Descriptions column={{ xs: 1, sm: 2 }} layout="vertical">
           <Descriptions.Item
@@ -60,7 +53,7 @@ export const InformacoesDaAcao: FC = () => {
             }
             span={2}
           >
-            {acao.local}
+            {acao.local} - {acao.municipio}-MA
           </Descriptions.Item>
         </Descriptions>
       </Card>
