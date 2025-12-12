@@ -1,7 +1,6 @@
 import type { Acao, IVisualizarAcaoService } from "./types";
 
 class VisualizarAcaoService implements IVisualizarAcaoService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getAcao(id: string): Promise<Acao | null> {
     const url =
       "https://n8n.atomotriz.com/webhook/cd91a1c4-6b8d-44b1-ab67-31fc8b1e7231";
