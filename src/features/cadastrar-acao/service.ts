@@ -1,11 +1,21 @@
 import type { DadosCadastroAcao, ICadastrarAcaoService } from "./types";
 
-class MockCadastrarAcaoService implements ICadastrarAcaoService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+class CadastrarAcaoService implements ICadastrarAcaoService {
   async cadastrarAcao(dados: DadosCadastroAcao): Promise<{ id: string }> {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    return { id: "123" };
+    const url =
+      "https://n8n.atomotriz.com/webhook/ddbe0724-6073-448a-8f07-71a4e5ede1cf";
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dados),
+    });
+    if (!response.ok) throw new Error("Erro ao cadastrar ação");
+
+    const data = (await response.json()) as { id: string };
+    return data;
   }
 }
 
-export const cadastrarAcaoService = new MockCadastrarAcaoService();
+export const cadastrarAcaoService = new CadastrarAcaoService();
