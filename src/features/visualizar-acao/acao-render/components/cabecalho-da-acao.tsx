@@ -12,7 +12,6 @@ import {
   App,
 } from "antd";
 import type { FC } from "react";
-import type { StatusAcao } from "../../types";
 import { useVisualizarAcao } from "../../hook";
 import {
   TeamOutlined,
@@ -20,6 +19,7 @@ import {
   EllipsisOutlined,
   CalendarOutlined,
 } from "@ant-design/icons";
+import type { StatusAcao } from "../../../../shared/types";
 
 const { Title, Text } = Typography;
 

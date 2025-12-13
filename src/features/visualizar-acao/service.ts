@@ -1,4 +1,4 @@
-import type { Acao, IVisualizarAcaoService } from "./types";
+import type { AcaoComInscritos, IVisualizarAcaoService } from "./types";
 
 class VisualizarAcaoService implements IVisualizarAcaoService {
   cancelarAcao(id: string): Promise<void> {
@@ -19,7 +19,7 @@ class VisualizarAcaoService implements IVisualizarAcaoService {
     if (!response.ok) throw new Error("Erro ao cadastrar ação");
   }
 
-  async getAcao(id: string): Promise<Acao | null> {
+  async getAcao(id: string): Promise<AcaoComInscritos | null> {
     const url =
       "https://n8n.atomotriz.com/webhook/cd91a1c4-6b8d-44b1-ab67-31fc8b1e7231";
     const response = await fetch(url + "?eventoId=" + id, {
@@ -30,7 +30,7 @@ class VisualizarAcaoService implements IVisualizarAcaoService {
     });
     if (!response.ok) throw new Error("Erro ao cadastrar ação");
 
-    const data = (await response.json()) as Acao;
+    const data = (await response.json()) as AcaoComInscritos;
     return {
       ...data,
       inscritos: data.inscritos.sort((a, b) => a.nome.localeCompare(b.nome)),

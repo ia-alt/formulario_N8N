@@ -6,7 +6,7 @@ import {
   type FC,
   type PropsWithChildren,
 } from "react";
-import { VisualizarAcaoContext, type Acao } from "./types";
+import { VisualizarAcaoContext, type AcaoComInscritos } from "./types";
 import { visualizarAcaoService } from "./service";
 import type { Inscrito } from "../../shared/types";
 
@@ -15,7 +15,7 @@ export const VisualizarAcaoProvider: FC<PropsWithChildren<{ id: string }>> = ({
   id,
 }) => {
   const [carregando, setCarregando] = useState(true);
-  const [acao, setAcao] = useState<Acao | null>(null);
+  const [acao, setAcao] = useState<AcaoComInscritos | null>(null);
 
   useEffect(() => {
     visualizarAcaoService
