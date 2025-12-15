@@ -14,7 +14,8 @@ class ListarAcoesService implements IListarAcoesService {
 
     if (!response.ok) throw new Error("Erro ao cadastrar ação");
 
-    const data = (await response.json()) as Acao[];
+    const responseJson = (await response.json()) as { data: Acao[] };
+    const data = responseJson.data;
     data.sort(
       (a, b) =>
         new Date(b.data + "T" + b.horarioInicio).getTime() -
