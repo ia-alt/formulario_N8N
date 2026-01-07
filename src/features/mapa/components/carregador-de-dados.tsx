@@ -23,7 +23,8 @@ export const CarregadorDeDados: FC = () => {
     // 2. Estilizar com base na lista (Verde se presente, Vermelho se fora)
     map.data.setStyle((feature) => {
       // Importante: Verifique se o nome no JSON está em maiúsculas ou minúsculas
-      const nomeMun = feature.getProperty("NM_MUN")?.toUpperCase();
+      const nomeMun =
+        (feature.getProperty("NM_MUN") as string | null)?.toUpperCase() || "";
       const estaNaLista = listaVerde
         .map((i) => i.toUpperCase())
         .includes(nomeMun);

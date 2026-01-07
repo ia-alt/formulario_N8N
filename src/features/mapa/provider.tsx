@@ -35,7 +35,7 @@ export const InnerMapaProvider: FC<PropsWithChildren> = ({ children }) => {
   const map = useMap();
   const [acoes, setAcoes] = useState<Acao[]>([]);
 
-  const [filtro, setFiltro] = useState<Filtro>({});
+  const [filtro] = useState<Filtro>({});
 
   const acoesFiltradas = useMemo(() => {
     return acoes;

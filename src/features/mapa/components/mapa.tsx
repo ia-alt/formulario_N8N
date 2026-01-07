@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { FC } from "react";
 import { Map } from "@vis.gl/react-google-maps";
+
+const MMap = Map as any;
 
 const mapOptions: google.maps.MapOptions = {
   styles: [
@@ -23,12 +26,12 @@ const mapOptions: google.maps.MapOptions = {
 
 export const Mapa: FC = () => {
   return (
-    <Map
+    <MMap
       style={{ width: "100vw", height: "100vh" }}
       defaultCenter={{ lat: -5, lng: -45 }}
       defaultZoom={6}
       gestureHandling="greedy"
-      options={mapOptions}
+      options={mapOptions as any}
     />
   );
 };
