@@ -1,0 +1,66 @@
+{
+    "cells": [
+        {
+            "language": "typescript",
+            "source": [
+                "import fs from \"node:fs/promises\"\r\nimport path from \"node:path\"\r\n\r\nconst csvsDirPath = path.join(__dirname, \"csvs\");\r\nconst csvsFilesNames = fs.readdir(csvsDirPath);\r\ncsvsFilesNames"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "text/plain",
+                            "value": [
+                                "[",
+                                "  \u001b[32m'Ações dos eixos - Eixo Educação - acoes_normalizadas.csv'\u001b[39m",
+                                "]"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "const csv=require('csvtojson')\r\nconst csvFileName = csvsFilesNames[0]\r\nconst csvFilePath = path.join(csvsDirPath, csvFileName)\r\nconst jsonArray= await csv().fromFile(csvFilePath);\r\njsonArray"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.error",
+                            "value": {
+                                "name": "TypeError",
+                                "message": "path.join is not a function",
+                                "stack": "    at <Cell 2> [3, 0]\n    at <Cell 2> [8, 46]\n    at Script.runInContext (node:vm:149:12)\n    at Script.runInNewContext (node:vm:154:17)\n    at Object.runInNewContext (node:vm:310:38)\n    at C (c:\\Users\\rodri\\.vscode\\extensions\\donjayamanne.typescript-notebook-2.0.6\\out\\extension\\server\\index.js:2:113345)\n    at t.execCode (c:\\Users\\rodri\\.vscode\\extensions\\donjayamanne.typescript-notebook-2.0.6\\out\\extension\\server\\index.js:2:114312)\n    at k.<anonymous> (c:\\Users\\rodri\\.vscode\\extensions\\donjayamanne.typescript-notebook-2.0.6\\out\\extension\\server\\index.js:2:142156)\n    at k.emit (node:events:507:28)\n    at k.emit (node:domain:489:12)"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

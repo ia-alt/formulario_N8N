@@ -1,9 +1,12 @@
-import { Button, Drawer } from "antd";
+import { Button, Drawer, Form, Select } from "antd";
 import { useState, type FC } from "react";
 import { FilterOutlined } from "@ant-design/icons";
+import { useMapaContext } from "../hook";
 
 export const MenuFiltro: FC = () => {
+  const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
+  const { filtroOptions } = useMapaContext();
 
   const showDrawer = () => {
     setOpen(true);
@@ -37,7 +40,19 @@ export const MenuFiltro: FC = () => {
         onClose={onClose}
         open={open}
       >
-        <p>Em Breve</p>
+        <Form form={form} layout="vertical">
+          <Form.Item label="Eixo Responsável" name="eixo_responsavel">
+            <Select
+              mode="multiple"
+              style={{ width: "100%" }}
+              placeholder="Todos"
+              options={filtroOptions.eixo_responsavel.map((option) => ({
+                value: option,
+                label: option,
+              }))}
+            />
+          </Form.Item>
+        </Form>
       </Drawer>
     </>
   );
