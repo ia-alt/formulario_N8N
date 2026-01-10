@@ -53,7 +53,9 @@ export const InnerMapaProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [acoesFiltradas]);
 
   useEffect(() => {
-    fetch("/dados.json")
+    fetch(
+      "https://n8n.atomotriz.com/webhook/50026eab-c6e0-47d0-beb8-d433d34301bd"
+    )
       .then((x) => x.json() as Promise<AcaoJson[]>)
       .then((x) => setAcoes(x.map(acaoJsonToAcao)));
   }, []);
