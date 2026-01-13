@@ -111,6 +111,7 @@ export const CabecalhoDaAcao: FC = () => {
                       key: "cancelar_acao",
                       label: "Cancelar Ação",
                       danger: true,
+                      disabled: true,
                     },
                   ],
                   onClick: onMenuClick,

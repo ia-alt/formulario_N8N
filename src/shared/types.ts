@@ -24,3 +24,7 @@ export type Acao = {
   linkPlanilhaInscritos: string;
   linkGoogleCalendar: string;
 };
+
+export type AcaoComInscritos = {
+  inscritos: Inscrito[];
+} & Acao;

@@ -8,7 +8,6 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { Carimbo } from "./carimbo";
 
 export const AcaoRender: FC<{ acao: Acao }> = ({ acao }) => {
   return (
@@ -58,8 +57,7 @@ export const AcaoRender: FC<{ acao: Acao }> = ({ acao }) => {
             </Space>
           </Flex>
           <Flex justify="center" align="center">
-            <Carimbo
-              text={acao.status}
+            <Tag
               color={
                 acao.status === "ATIVA"
                   ? "blue"
@@ -67,9 +65,9 @@ export const AcaoRender: FC<{ acao: Acao }> = ({ acao }) => {
                   ? "green"
                   : "red"
               }
-              rotate={0}
-              size="1rem"
-            />
+            >
+              {acao.status}
+            </Tag>
           </Flex>
         </Flex>
       </Card>

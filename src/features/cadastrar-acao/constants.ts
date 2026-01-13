@@ -1,10 +1,11 @@
 export const departamentos = [
-  "Eixo Educação",
   "Eixo Ecossistema",
+  "Eixo Educação",
   "Eixo Inteligência Artificial",
   "Eixo Startups",
   "Eixo Social",
   "Eixo Universidade",
+  "Locomotiva HUB",
 ];
 
 export const tiposDeAcao = [
@@ -13,7 +14,7 @@ export const tiposDeAcao = [
   "Minicurso",
   "Roda de Conversa",
   "Curso",
-  "Hackathon",
+  "Imersão",
 ];
 
 export const cidadesMaranhao = [

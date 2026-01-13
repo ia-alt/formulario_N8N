@@ -6,9 +6,9 @@ import {
   type FC,
   type PropsWithChildren,
 } from "react";
-import { VisualizarAcaoContext, type AcaoComInscritos } from "./types";
+import { VisualizarAcaoContext } from "./types";
 import { visualizarAcaoService } from "./service";
-import type { Inscrito } from "../../shared/types";
+import type { AcaoComInscritos, Inscrito } from "../../shared/types";
 
 export const VisualizarAcaoProvider: FC<PropsWithChildren<{ id: string }>> = ({
   children,
@@ -72,7 +72,7 @@ export const VisualizarAcaoProvider: FC<PropsWithChildren<{ id: string }>> = ({
     if (!acao) return;
     setCarregando(true);
     visualizarAcaoService
-      .finalizarAcao(acao.id)
+      .concluirAcao(acao.id)
       .then(() => {
         setAcao((acao) =>
           acao

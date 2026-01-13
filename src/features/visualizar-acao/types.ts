@@ -1,14 +1,10 @@
 import { createContext } from "react";
-import type { Acao, Inscrito } from "../../shared/types";
-
-export type AcaoComInscritos = {
-  inscritos: Inscrito[];
-} & Acao;
+import type { AcaoComInscritos, Inscrito } from "../../shared/types";
 
 export interface IVisualizarAcaoService {
   getAcao(id: string): Promise<AcaoComInscritos | null>;
   cancelarAcao(id: string): Promise<void>;
-  finalizarAcao(id: string): Promise<void>;
+  concluirAcao(id: string): Promise<void>;
 }
 
 export interface IVisualizarAcaoContext {

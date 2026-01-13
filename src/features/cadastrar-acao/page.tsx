@@ -30,9 +30,10 @@ import {
 } from "./constants";
 import { removeDiacritics } from "../../helpers/remove-diacritics";
 import dayjs from "dayjs";
-import type { DadosCadastroAcao } from "./types";
 import { cadastrarAcaoService } from "./service";
 import { useNavigate } from "react-router";
+import type { DadosCadastroAcao } from "../../shared/acoes-secti-api";
+import { env } from "../../env";
 
 type FormData = Omit<
   DadosCadastroAcao,
@@ -44,16 +45,20 @@ type FormData = Omit<
 };
 
 const initial: Partial<FormData> = {
-  nome: "Evento X",
-  tipo: "Palestra",
-  publicoAlvo: "Alunos",
-  eixo: "Eixo Inteligência Artificial",
-  cargaHoraria: 2,
-  local: "Estação Tech Nina Rodrigues, IEMA Tamancão",
-  cidade: "São Luís",
-  data: dayjs(),
-  horarioInicio: dayjs().set("hour", 10).set("minute", 0),
-  horarioFim: dayjs().set("hour", 12).set("minute", 0),
+  ...(env.appEnv === "dev"
+    ? {
+        nome: "Evento X",
+        tipo: "Palestra",
+        publicoAlvo: "Alunos",
+        eixo: "Eixo Inteligência Artificial",
+        cargaHoraria: 2,
+        local: "Estação Tech Nina Rodrigues, IEMA Tamancão",
+        cidade: "São Luís",
+        data: dayjs(),
+        horarioInicio: dayjs().set("hour", 10).set("minute", 0),
+        horarioFim: dayjs().set("hour", 12).set("minute", 0),
+      }
+    : {}),
 
   camposFormularioInscricao: [
     ...camposPadroes.obrigatorios,
@@ -96,7 +101,6 @@ export const CadastrarAcaoPage: FC = () => {
       <Layout.Content>
         <div style={{ padding: "24px", maxWidth: "900px", margin: "0 auto" }}>
           <Typography.Title>Cadastrar Ação</Typography.Title>
-
           <Spin spinning={carregando}>
             <Form
               layout="vertical"
