@@ -3,14 +3,14 @@ import type { Acao, AcaoComInscritos } from "../types";
 
 export type DadosCadastroAcao = {
   nome: string;
-  tipo: string; // palestra, oficina, minicurso, roda de conversa
+  tipo: string;
   publicoAlvo: string;
   cargaHoraria: number;
   eixo: string;
   local: string;
   cidade: string;
-  data: string; // YYYY-MM-DD
-  horarioInicio: string; // HH:MM
+  data: string;
+  horarioInicio: string;
   horarioFim: string;
   camposFormularioInscricao: Campo[];
 };
@@ -32,6 +32,7 @@ class AcoesSectiApi {
       headers: {
         "Content-Type": "application/json",
         "x-env": this.env,
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub21lIjoiR3VpbGhlcm1lIGRvcyByZWlzIGxpbWEiLCJjcGYiOiIxMjM0NTY3ODkwMCIsImV4cCI6MTc2OTAyNzExNiwiaWF0IjoxNzY4NDIyMzE2fQ.BuYxGH6gSROB9aAheFmV-omyamZMwJAwYEdkL3Bh2Mc'
       },
       body: JSON.stringify(dados),
     });
@@ -67,6 +68,7 @@ class AcoesSectiApi {
       headers: {
         "Content-Type": "application/json",
         "x-env": this.env,
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub21lIjoiR3VpbGhlcm1lIGRvcyByZWlzIGxpbWEiLCJjcGYiOiIxMjM0NTY3ODkwMCIsImV4cCI6MTc2OTAyNzExNiwiaWF0IjoxNzY4NDIyMzE2fQ.BuYxGH6gSROB9aAheFmV-omyamZMwJAwYEdkL3Bh2Mc'
       },
     });
 
