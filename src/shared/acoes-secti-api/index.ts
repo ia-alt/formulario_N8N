@@ -21,9 +21,50 @@ export interface Campo {
   obrigatorio: boolean;
 }
 
+export type DadosLogin = {
+  cpf: string;
+  dataNascimento: string;
+};
+
+export type RespostaLogin = {
+  success: boolean;
+  token: string;
+  message: string;
+};
+
 class AcoesSectiApi {
   private env = env.appEnv;
+  private getAuthHeaders(): Record<string, string> {
+    const token = localStorage.getItem("token");
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+    return headers;
+  }
   constructor() {}
+
+  async login(dados: DadosLogin): Promise<RespostaLogin> {
+    const url = "https://n8n.atomotriz.com/webhook/7df35919-0693-4443-98bc-bfc75569e2ab";
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-env": this.env,
+      },
+      body: JSON.stringify(dados),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error("Acesso negado: Usuário ou senha incorretos.");
+      }
+      throw new Error("Erro ao realizar login");
+    }
+
+    const data = (await response.json()) as RespostaLogin;
+    return data;
+  }
 
   async cadastrarAcao(dados: DadosCadastroAcao): Promise<{ id: string }> {
     const url = "https://n8n.atomotriz.com/webhook/secti/acoes";
@@ -32,11 +73,17 @@ class AcoesSectiApi {
       headers: {
         "Content-Type": "application/json",
         "x-env": this.env,
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub21lIjoiR3VpbGhlcm1lIGRvcyByZWlzIGxpbWEiLCJjcGYiOiIxMjM0NTY3ODkwMCIsImV4cCI6MTc2OTAyNzExNiwiaWF0IjoxNzY4NDIyMzE2fQ.BuYxGH6gSROB9aAheFmV-omyamZMwJAwYEdkL3Bh2Mc'
+        ...this.getAuthHeaders(),
       },
       body: JSON.stringify(dados),
     });
-    if (!response.ok) throw new Error("Erro ao cadastrar ação");
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      }
+      throw new Error("Erro ao cadastrar ação");
+    }
 
     const data = (await response.json()) as { id: string };
     return data;
@@ -53,11 +100,18 @@ class AcoesSectiApi {
       headers: {
         "Content-Type": "application/json",
         "x-env": this.env,
+        ...this.getAuthHeaders(),
       },
       body: JSON.stringify({ idAcao: acaoId, presentes }),
     });
 
-    if (!response.ok) throw new Error("Erro ao cadastrar ação");
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      }
+      throw new Error("Erro ao cadastrar ação");
+    }
   }
 
   async listarAcoes() {
@@ -68,11 +122,17 @@ class AcoesSectiApi {
       headers: {
         "Content-Type": "application/json",
         "x-env": this.env,
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub21lIjoiR3VpbGhlcm1lIGRvcyByZWlzIGxpbWEiLCJjcGYiOiIxMjM0NTY3ODkwMCIsImV4cCI6MTc2OTAyNzExNiwiaWF0IjoxNzY4NDIyMzE2fQ.BuYxGH6gSROB9aAheFmV-omyamZMwJAwYEdkL3Bh2Mc'
+        ...this.getAuthHeaders(),
       },
     });
 
-    if (!response.ok) throw new Error("Erro ao cadastrar ação");
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      }
+      throw new Error("Erro ao cadastrar ação");
+    }
 
     const responseJson = (await response.json()) as { data: Acao[] };
     const data = responseJson.data;
@@ -91,9 +151,16 @@ class AcoesSectiApi {
       headers: {
         "Content-Type": "application/json",
         "x-env": this.env,
+        ...this.getAuthHeaders(),
       },
     });
-    if (!response.ok) throw new Error("Erro ao cadastrar ação");
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      }
+      throw new Error("Erro ao cadastrar ação");
+    }
 
     const data = (await response.json()) as AcaoComInscritos;
     return {
@@ -109,10 +176,17 @@ class AcoesSectiApi {
       headers: {
         "Content-Type": "application/json",
         "x-env": this.env,
+        ...this.getAuthHeaders(),
       },
     });
 
-    if (!response.ok) throw new Error("Erro ao cadastrar ação");
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      }
+      throw new Error("Erro ao cadastrar ação");
+    }
   }
 }
 
