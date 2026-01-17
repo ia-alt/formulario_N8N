@@ -16,6 +16,7 @@ import type {
 } from "./types";
 import { APIProvider, useMap } from "@vis.gl/react-google-maps";
 import { googleMapsKey } from "./contants";
+import { cidadesMaranhao } from "../cadastrar-acao/constants";
 export const MapaProvider: FC<PropsWithChildren> = ({ children }) => {
   return (
     <APIProvider apiKey={googleMapsKey}>
@@ -42,7 +43,7 @@ export const InnerMapaProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [acoes, filtro]);
 
   const listaVerde = useMemo(() => {
-    return Array.from(
+    const cidadesUnicas =  Array.from(
       new Set(
         acoesFiltradas
           .map((x) => x.municipio.split(","))
@@ -50,6 +51,15 @@ export const InnerMapaProvider: FC<PropsWithChildren> = ({ children }) => {
           .map((x) => x.trim())
       )
     ).sort((a, b) => a.localeCompare(b));
+
+    const cidaedesinvalidas =cidadesUnicas.filter((cidade) => !cidadesMaranhao.includes(cidade));
+    if (cidaedesinvalidas.length >0) {
+       console.warn("Cidades inválidas encontradas nas ações:", cidaedesinvalidas);
+      return []
+    }
+
+
+    return cidadesUnicas;
   }, [acoesFiltradas]);
 
   useEffect(() => {

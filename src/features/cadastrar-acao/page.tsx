@@ -101,11 +101,11 @@ export const CadastrarAcaoPage: FC = () => {
       <Layout.Content>
         <div style={{ padding: "24px", maxWidth: "900px", margin: "0 auto" }}>
           <Typography.Title>Cadastrar Ação</Typography.Title>
-          <Spin spinning={carregando}>
-            <Form
-              layout="vertical"
-              form={form}
-              onFinish={onFinish}
+          <Spin spinning={carregando} fullscreen tip="Cadastrando ação..." size="large" />
+          <Form
+            layout="vertical"
+            form={form}
+            onFinish={onFinish}
               initialValues={initial}
               onFinishFailed={(e) => console.log(e)}
             >
@@ -336,7 +336,6 @@ export const CadastrarAcaoPage: FC = () => {
                 </Flex>
               </Space>
             </Form>
-          </Spin>
         </div>
       </Layout.Content>
     </Layout>

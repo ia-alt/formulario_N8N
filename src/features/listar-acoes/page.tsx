@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { ListarAcoesProvider } from "./provider";
-import { Button, Flex, Layout, Space, Typography } from "antd";
+import { Button, Flex, Layout, Space, Typography, Spin } from "antd";
 import { useListarAcoes } from "./hooks";
 import { AcaoRender } from "./components/acao-render";
 import { LineChartOutlined, PlusOutlined } from "@ant-design/icons";
@@ -13,7 +13,7 @@ export const ListarAcoesPage: FC = () => {
 };
 
 const InnerListarAcoesPage: FC = () => {
-  const { acoes } = useListarAcoes();
+  const { acoes, carregando } = useListarAcoes();
 
   return (
     <Layout>
@@ -54,11 +54,19 @@ const InnerListarAcoesPage: FC = () => {
             </Space>
           </Flex>
 
-          <Flex orientation="vertical" gap={16}>
-            {acoes.map((acao) => (
-              <AcaoRender key={acao.id} acao={acao} />
-            ))}
-          </Flex>
+          <div style={{ marginTop: 70 }}>
+            <Spin spinning={carregando} tip="Carregando ações..." size="large">
+              <Flex
+                orientation="vertical"
+                gap={16}
+                style={{ minHeight: "200px" }}
+              >
+                {acoes.map((acao) => (
+                  <AcaoRender key={acao.id} acao={acao} />
+                ))}
+              </Flex>
+            </Spin>
+          </div>
         </div>
       </Layout.Content>
     </Layout>
