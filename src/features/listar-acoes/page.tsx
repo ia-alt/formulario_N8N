@@ -3,7 +3,11 @@ import { ListarAcoesProvider } from "./provider";
 import { Button, Flex, Layout, Space, Typography, Spin } from "antd";
 import { useListarAcoes } from "./hooks";
 import { AcaoRender } from "./components/acao-render";
-import { LineChartOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  EnvironmentOutlined,
+  LineChartOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 export const ListarAcoesPage: FC = () => {
   return (
     <ListarAcoesProvider>
@@ -33,6 +37,13 @@ const InnerListarAcoesPage: FC = () => {
           >
             <Typography.Title>Ações SECTI</Typography.Title>
             <Space>
+              <Button
+                type="dashed"
+                icon={<EnvironmentOutlined />}
+                href={"/mapa"}
+              >
+                Mapa
+              </Button>
               <Button
                 type="dashed"
                 icon={<LineChartOutlined />}
