@@ -18,7 +18,7 @@ import {
   App,
   Spin,
 } from "antd";
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { useState, type FC } from "react";
 import {
   cidadesMaranhao,
@@ -100,7 +100,12 @@ export const CadastrarAcaoPage: FC = () => {
     <Layout>
       <Layout.Content>
         <div style={{ padding: "24px", maxWidth: "900px", margin: "0 auto" }}>
-          <Typography.Title>Cadastrar Ação</Typography.Title>
+          <Flex orientation="horizontal" gap={"large"} align="center"  style={{ marginBottom: "24px" }}>
+            <Button type="text" onClick={() => navigate("/")}>
+              <ArrowLeftOutlined />
+            </Button>
+            <Typography.Title style={{ margin: 0 }}>Cadastrar Ação</Typography.Title>
+          </Flex>
           <Spin spinning={carregando} fullscreen tip="Cadastrando ação..." size="large" />
           <Form
             layout="vertical"

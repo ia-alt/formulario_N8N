@@ -15,6 +15,7 @@ export const tiposDeAcao = [
   "Roda de Conversa",
   "Curso",
   "Imersão",
+  "Divulgação",
 ];
 
 export const cidadesMaranhao = [
@@ -264,4 +265,6 @@ export const publicosAlvos = [
   { value: "Alunos" },
   { value: "Professores" },
   { value: "Servidores" },
+  { value: "Público Geral"},
+  { value: "Empreendedores"},
 ];
