@@ -22,8 +22,8 @@ export interface Campo {
 }
 
 export type DadosLogin = {
-  cpf: string;
-  dataNascimento: string;
+  usuario: string;
+  senha: string;
 };
 
 export type RespostaLogin = {

@@ -16,32 +16,17 @@ import type { DadosLogin } from "../../shared/acoes-secti-api";
 const { Title } = Typography;
 const { Content } = Layout;
 
-const formatCPF = (value: string) => {
-  const numeric = value.replace(/\D/g, "").slice(0, 11);
-  return numeric
-    .replace(/(\d{3})(\d)/, "$1.$2")
-    .replace(/(\d{3})(\d)/, "$1.$2")
-    .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-};
-
-const formatDate = (value: string) => {
-  const numeric = value.replace(/\D/g, "").slice(0, 8);
-  return numeric
-    .replace(/(\d{2})(\d)/, "$1/$2")
-    .replace(/(\d{2})\/(\d{2})(\d)/, "$1/$2/$3");
-};
-
 export const LoginPage: FC = () => {
   const [loading, setLoading] = useState(false);
   const { message } = App.useApp();
   const navigate = useNavigate();
 
-  const onFinish = async (values: { cpf: string; dataNascimento: string }) => {
+  const onFinish = async (values: { usuario: string; senha: string }) => {
     setLoading(true);
     try {
       const dados: DadosLogin = {
-        cpf: values.cpf.replace(/\D/g, ""), 
-        dataNascimento: values.dataNascimento,
+        usuario: values.usuario,
+        senha: values.senha,
       };
 
       const response = await loginService.login(dados);
@@ -77,30 +62,26 @@ export const LoginPage: FC = () => {
                 autoComplete="off"
               >
                 <Form.Item
-                  label="CPF"
-                  name="cpf"
+                  label="Usuário"
+                  name="usuario"
                   rules={[
-                    { required: true, message: "Por favor, insira seu CPF!" },
-                    { min: 14, message: "CPF incompleto" },
+                    { required: true, message: "Por favor, insira seu Usuário!" }
                   ]}
-                  getValueFromEvent={(e) => formatCPF(e.target.value)}
                 >
-                  <Input placeholder="000.000.000-00" maxLength={14} />
+                  <Input placeholder="Usuário" />
                 </Form.Item>
 
                 <Form.Item
-                  label="Data de Nascimento"
-                  name="dataNascimento"
+                  label="Senha"
+                  name="senha"
                   rules={[
                     {
                       required: true,
-                      message: "Por favor, insira sua data de nascimento!",
-                    },
-                    { min: 10, message: "Data incompleta (DD/MM/AAAA)" },
+                      message: "Por favor, insira sua senha!",
+                    }
                   ]}
-                  getValueFromEvent={(e) => formatDate(e.target.value)}
                 >
-                  <Input placeholder="DD/MM/AAAA" maxLength={10} />
+                  <Input placeholder="Senha" />
                 </Form.Item>
 
                 <Form.Item>
