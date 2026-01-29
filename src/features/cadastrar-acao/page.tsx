@@ -87,7 +87,8 @@ export const CadastrarAcaoPage: FC = () => {
         message.success("Ação cadastrada com sucesso!");
         console.log("Sucesso. Id:", id);
         setCarregando(false);
-        navigate("/acoes/" + id);
+        window.open(`/acoes/${id}`, "_blank", "noopener,noreferrer");
+        navigate("/");
       })
       .catch((e) => {
         message.error("Erro ao cadastrar ação!");
