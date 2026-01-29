@@ -6,6 +6,7 @@ import { MenuFiltro } from "./components/menu-filtro";
 import { MapaProvider } from "./provider";
 import { Button } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
+import { TooltipMapa } from "./components/tooltip-mapa";
 
 export const MapaPage: FC = () => {
   // Configuração para deixar o mapa base escuro/ofuscado
@@ -38,6 +39,7 @@ const InnerMapaPage: FC = () => {
       <CarregadorDeDados />
       <BarraDeProgresso />
       <MenuFiltro />
+      <TooltipMapa />
     </div>
   );
 };
