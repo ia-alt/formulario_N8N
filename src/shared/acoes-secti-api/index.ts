@@ -1,5 +1,5 @@
 import { env } from "../../env";
-import type { Acao, AcaoComInscritos } from "../types";
+import type { Acao, AcaoComInscritos, FormularioInfo } from "../types";
 
 export type DadosCadastroAcao = {
   nome: string;
@@ -187,6 +187,30 @@ class AcoesSectiApi {
       }
       throw new Error("Erro ao cadastrar ação");
     }
+  }
+
+  async verificaGoogleForms(formUrl: string): Promise<FormularioInfo> {
+    const url = `https://n8n.atomotriz.com/webhook/4ad5dea8-243f-4dcd-a944-7d8e3a73d1ec`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-env": this.env,
+        ...this.getAuthHeaders(),
+      },
+      body: JSON.stringify({ formUrl }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      }
+      throw new Error("Erro!");
+    }
+
+    const data = (await response.json()) as FormularioInfo;
+    return data;
   }
 }
 
