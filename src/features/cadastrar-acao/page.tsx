@@ -18,8 +18,9 @@ import {
   App,
   Spin,
   Radio,
+  Tooltip,
 } from "antd";
-import { ArrowLeftOutlined, MinusCircleOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, MinusCircleOutlined, PlusOutlined, SearchOutlined, CheckCircleOutlined, CloseCircleOutlined, QuestionCircleOutlined, LoadingOutlined } from "@ant-design/icons";
 import { useState, type FC } from "react";
 import {
   cidadesMaranhao,
@@ -33,7 +34,7 @@ import { removeDiacritics } from "../../helpers/remove-diacritics";
 import dayjs from "dayjs";
 import { cadastrarAcaoService } from "./service";
 import { useNavigate } from "react-router";
-import type { DadosCadastroAcao } from "../../shared/acoes-secti-api";
+import { acoesSectiApi, type DadosCadastroAcao, type FormularioInfo } from "../../shared/acoes-secti-api";
 import { env } from "../../env";
 
 type FormData = Omit<
@@ -70,6 +71,8 @@ const initial: Partial<FormData> = {
 export const CadastrarAcaoPage: FC = () => {
   const [form] = Form.useForm<FormData>();
   const [carregando, setCarregando] = useState(false);
+  const [verificandoUrl, setVerificandoUrl] = useState(false);
+  const [verificationInfo, setVerificationInfo] = useState<FormularioInfo | null>(null);
   const [formularioInscricaoMode, setFormularioInscricaoMode] = useState<'url' | 'campos'>('campos');
   const { message } = App.useApp();
   const navigate = useNavigate();
@@ -107,8 +110,63 @@ export const CadastrarAcaoPage: FC = () => {
 
   function handleFormularioInscricaoModeChange(value: 'url' | 'campos') {
     setFormularioInscricaoMode(value);
+    setVerificationInfo(null);
     form.resetFields(['formularioInscricaoUrl', 'camposFormularioInscricao']);
   }
+
+  async function handleVerificarUrl() {
+    const url = form.getFieldValue("formularioInscricaoUrl");
+    if (!url) {
+      message.warning("Por favor, insira a URL do formulário.");
+      return;
+    }
+
+    setVerificandoUrl(true);
+    setVerificationInfo(null);
+    try {
+      const info = await acoesSectiApi.verificaGoogleForms(url);
+      setVerificationInfo(info);
+      
+      if (info.temAcessoForm && 'temPlanilhaVinculada' in info && info.temPlanilhaVinculada && 'temAcessoPlanilhaRespostas' in info && info.temAcessoPlanilhaRespostas) {
+         message.success("Formulário verificado com sucesso!");
+      } else {
+         message.warning("Verifique os itens pendentes no checklist.");
+      }
+
+    } catch (error) {
+      console.error(error);
+      message.error("Erro ao verificar o formulário. Tente novamente.");
+    } finally {
+      setVerificandoUrl(false);
+    }
+  }
+
+  const getChecklistIcon = (step: 1 | 2 | 3) => {
+    if (verificandoUrl) return <LoadingOutlined />;
+    
+    let status: 'pending' | 'success' | 'error' | 'blocked' = 'pending';
+
+    if (!verificationInfo) {
+      status = 'pending';
+    } else {
+       if (step === 1) {
+          status = verificationInfo.temAcessoForm ? 'success' : 'error';
+       } else if (step === 2) {
+          if (!verificationInfo.temAcessoForm) status = 'blocked';
+          else status = verificationInfo.temPlanilhaVinculada ? 'success' : 'error';
+       } else if (step === 3) {
+          if (!verificationInfo.temAcessoForm || !('temPlanilhaVinculada' in verificationInfo) || !verificationInfo.temPlanilhaVinculada) status = 'blocked';
+          else status = verificationInfo.temAcessoPlanilhaRespostas ? 'success' : 'error';
+       }
+    }
+
+    switch (status) {
+      case 'success': return <CheckCircleOutlined style={{ color: '#52c41a' }} />;
+      case 'error': return <CloseCircleOutlined style={{ color: '#ff4d4f' }} />;
+      case 'blocked': return <MinusCircleOutlined style={{ color: '#d9d9d9' }} />;
+      case 'pending': default: return <QuestionCircleOutlined style={{ color: '#d9d9d9' }} />;
+    }
+  };
 
   return (
     <Layout>
@@ -291,6 +349,9 @@ export const CadastrarAcaoPage: FC = () => {
                 
                 {formularioInscricaoMode === 'url' && (
                   <Card title={"URL do formulário de inscrição"}>
+                    
+                    
+
                     <Form.Item<FormData>
                       name="formularioInscricaoUrl"
                       label="URL do formulário de inscrição"
@@ -298,9 +359,27 @@ export const CadastrarAcaoPage: FC = () => {
                     >
                       <Space.Compact style={{ width: "100%" }}>
                         <Input />
-                        <Button type="default" icon={<SearchOutlined />}>Verificar</Button>
+                        <Button type="default" icon={<SearchOutlined />} loading={verificandoUrl} onClick={handleVerificarUrl}>Verificar</Button>
                       </Space.Compact>
                     </Form.Item>
+                      <strong>Verificações: </strong>
+                    <Flex gap="small" vertical style={{paddingLeft: 12}}>
+                      <Tooltip title="O formulário deve ser público ou compartilhado com ia@secti2.ma.gov.br">
+                        <Space>
+                          {getChecklistIcon(1)} <span>Acesso ao formulário</span>
+                        </Space>
+                      </Tooltip>
+                      <Tooltip title="O formulário deve ter uma planilha de respostas associada">
+                        <Space>
+                          {getChecklistIcon(2)} <span>Planilha vinculada</span>
+                        </Space>
+                      </Tooltip>
+                      <Tooltip title="A planilha deve ser pública ou compartilhada com ia@secti2.ma.gov.br">
+                        <Space>
+                          {getChecklistIcon(3)} <span>Acesso à planilha</span>
+                        </Space>
+                      </Tooltip>
+                    </Flex>
                   </Card>
                 )}
 
@@ -381,7 +460,7 @@ export const CadastrarAcaoPage: FC = () => {
                 </Card>
                 )}
                 <Flex justify="center" align="center">
-                  <Button type="primary" htmlType="submit" loading={carregando}>
+                  <Button disabled={formularioInscricaoMode === 'url' && (!verificationInfo?.temAcessoForm || !verificationInfo?.temPlanilhaVinculada || !verificationInfo?.temAcessoPlanilhaRespostas)} type="primary" htmlType="submit" loading={carregando}>
                     Cadastrar
                   </Button>
                 </Flex>

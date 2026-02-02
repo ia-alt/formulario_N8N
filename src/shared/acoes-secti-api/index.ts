@@ -1,5 +1,6 @@
 import { env } from "../../env";
 import type { Acao, AcaoComInscritos, FormularioInfo } from "../types";
+export type { FormularioInfo };
 
 export type DadosCadastroAcao = {
   nome: string;
