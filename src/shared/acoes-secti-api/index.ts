@@ -12,8 +12,18 @@ export type DadosCadastroAcao = {
   data: string;
   horarioInicio: string;
   horarioFim: string;
-  camposFormularioInscricao: Campo[];
-};
+} & (
+  | {
+      camposFormularioInscricao: Campo[];
+      formularioInscricaoUrl?: never;
+    }
+  | {
+      formularioInscricaoUrl: string;
+      camposFormularioInscricao?: never;
+    }
+);
+
+
 
 export interface Campo {
   nome: string;
@@ -45,7 +55,8 @@ class AcoesSectiApi {
   constructor() {}
 
   async login(dados: DadosLogin): Promise<RespostaLogin> {
-    const url = "https://n8n.atomotriz.com/webhook/7df35919-0693-4443-98bc-bfc75569e2ab";
+    const url =
+      "https://n8n.atomotriz.com/webhook/7df35919-0693-4443-98bc-bfc75569e2ab";
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -91,7 +102,7 @@ class AcoesSectiApi {
 
   async setInscritosPresentesEmAcao(
     acaoId: string,
-    presentes: string[]
+    presentes: string[],
   ): Promise<void> {
     const url =
       "https://n8n.atomotriz.com/webhook/76fff530-decf-4c4b-a2ef-727e87623aa2/secti/acoes/:acaoId/chamada";
@@ -139,7 +150,7 @@ class AcoesSectiApi {
     data.sort(
       (a, b) =>
         new Date(b.data + "T" + b.horarioInicio).getTime() -
-        new Date(a.data + "T" + a.horarioInicio).getTime()
+        new Date(a.data + "T" + a.horarioInicio).getTime(),
     );
     return data;
   }

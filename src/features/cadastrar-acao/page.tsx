@@ -17,8 +17,9 @@ import {
   Flex,
   App,
   Spin,
+  Radio,
 } from "antd";
-import { ArrowLeftOutlined, MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, MinusCircleOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { useState, type FC } from "react";
 import {
   cidadesMaranhao,
@@ -69,16 +70,23 @@ const initial: Partial<FormData> = {
 export const CadastrarAcaoPage: FC = () => {
   const [form] = Form.useForm<FormData>();
   const [carregando, setCarregando] = useState(false);
+  const [formularioInscricaoMode, setFormularioInscricaoMode] = useState<'url' | 'campos'>('campos');
   const { message } = App.useApp();
   const navigate = useNavigate();
 
   function onFinish(values: FormData) {
     setCarregando(true);
+    const { camposFormularioInscricao, formularioInscricaoUrl, ...otherValues } = values;
     const dados: DadosCadastroAcao = {
-      ...values,
+      ...otherValues,
       data: values.data.format("YYYY-MM-DD"),
       horarioInicio: values.horarioInicio.format("HH:mm"),
       horarioFim: values.horarioFim.format("HH:mm"),
+      ...(
+        formularioInscricaoMode === 'url'
+          ? { formularioInscricaoUrl: formularioInscricaoUrl! }
+          : { camposFormularioInscricao: camposFormularioInscricao! }
+      )
     };
     console.log(dados);
     cadastrarAcaoService
@@ -95,6 +103,11 @@ export const CadastrarAcaoPage: FC = () => {
         console.log(e);
         setCarregando(false);
       });
+  }
+
+  function handleFormularioInscricaoModeChange(value: 'url' | 'campos') {
+    setFormularioInscricaoMode(value);
+    form.resetFields(['formularioInscricaoUrl', 'camposFormularioInscricao']);
   }
 
   return (
@@ -261,7 +274,38 @@ export const CadastrarAcaoPage: FC = () => {
                   </Row>
                 </Card>
 
-                <Card title={"Campos para o formulário de inscrição"}>
+                <Card title="Configuração da Inscrição">
+                  <Form.Item label="Tipo de formulário de inscrição">
+                    <Radio.Group
+                      value={formularioInscricaoMode}
+                      onChange={(e) => handleFormularioInscricaoModeChange(e.target.value)}
+                      optionType="button"
+                      buttonStyle="solid"
+                    >
+                      <Radio.Button value="campos">Criar Novo Formulário</Radio.Button>
+                      <Radio.Button value="url">Usar Formulário Existente</Radio.Button>
+                    </Radio.Group>
+                  </Form.Item>
+                </Card>
+                
+                
+                {formularioInscricaoMode === 'url' && (
+                  <Card title={"URL do formulário de inscrição"}>
+                    <Form.Item<FormData>
+                      name="formularioInscricaoUrl"
+                      label="URL do formulário de inscrição"
+                      rules={[{ required: true }]}
+                    >
+                      <Space.Compact style={{ width: "100%" }}>
+                        <Input />
+                        <Button type="default" icon={<SearchOutlined />}>Verificar</Button>
+                      </Space.Compact>
+                    </Form.Item>
+                  </Card>
+                )}
+
+                {formularioInscricaoMode === 'campos' && (
+                  <Card title={"Campos para o formulário de inscrição"}>
                   <Form.List name="camposFormularioInscricao">
                     {(fields, { add, remove }) => (
                       <>
@@ -335,6 +379,7 @@ export const CadastrarAcaoPage: FC = () => {
                     )}
                   </Form.List>
                 </Card>
+                )}
                 <Flex justify="center" align="center">
                   <Button type="primary" htmlType="submit" loading={carregando}>
                     Cadastrar
