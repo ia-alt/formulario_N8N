@@ -201,6 +201,26 @@ class AcoesSectiApi {
     }
   }
 
+  async cancelarAcao(id: string): Promise<void> {
+    const url = `https://n8n.atomotriz.com/webhook/9df02657-4d34-4975-bc4a-240e7a3e629f/secti/acoes/${id}/cancelar`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-env": this.env,
+        ...this.getAuthHeaders(),
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      }
+      throw new Error("Erro ao cancelar ação");
+    }
+  }
+
   async verificaGoogleForms(formUrl: string): Promise<FormularioInfo> {
     const url = `https://n8n.atomotriz.com/webhook/4ad5dea8-243f-4dcd-a944-7d8e3a73d1ec`;
     const response = await fetch(url, {

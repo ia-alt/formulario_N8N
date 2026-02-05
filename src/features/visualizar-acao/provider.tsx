@@ -6,6 +6,7 @@ import {
   type FC,
   type PropsWithChildren,
 } from "react";
+import { useNavigate } from "react-router";
 import { VisualizarAcaoContext } from "./types";
 import { visualizarAcaoService } from "./service";
 import type { AcaoComInscritos, Inscrito } from "../../shared/types";
@@ -14,6 +15,7 @@ export const VisualizarAcaoProvider: FC<PropsWithChildren<{ id: string }>> = ({
   children,
   id,
 }) => {
+  const navigate = useNavigate();
   const [carregando, setCarregando] = useState(true);
   const [acao, setAcao] = useState<AcaoComInscritos | null>(null);
 
@@ -51,14 +53,7 @@ export const VisualizarAcaoProvider: FC<PropsWithChildren<{ id: string }>> = ({
     visualizarAcaoService
       .cancelarAcao(acao.id)
       .then(() => {
-        setAcao((acao) =>
-          acao
-            ? {
-                ...acao,
-                status: "CANCELADA",
-              }
-            : null
-        );
+        navigate("/");
       })
       .catch((e) => {
         console.log(e);
@@ -66,7 +61,7 @@ export const VisualizarAcaoProvider: FC<PropsWithChildren<{ id: string }>> = ({
       .finally(() => {
         setCarregando(false);
       });
-  }, [acao]);
+  }, [acao, navigate]);
 
   const finalizarAcao = useCallback(() => {
     if (!acao) return;

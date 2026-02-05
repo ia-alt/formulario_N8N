@@ -54,9 +54,6 @@ export const CabecalhoDaAcao: FC = () => {
           onOk: () => {
             finalizarAcao();
           },
-          onCancel: () => {
-            cancelarAcao();
-          },
         });
         break;
       case "cancelar_acao":
@@ -111,7 +108,6 @@ export const CabecalhoDaAcao: FC = () => {
                       key: "cancelar_acao",
                       label: "Cancelar Ação",
                       danger: true,
-                      disabled: true,
                     },
                   ],
                   onClick: onMenuClick,
