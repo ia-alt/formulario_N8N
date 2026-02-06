@@ -181,7 +181,7 @@ class AcoesSectiApi {
     };
   }
 
-  async concluirAcao(id: string): Promise<void> {
+  async concluirAcao(id: string, linkDrive?: string): Promise<void> {
     const url = `https://n8n.atomotriz.com/webhook/75236413-ad0e-47e4-9328-f783a8ab3382/secti/acoes/${id}/concluir`;
     const response = await fetch(url, {
       method: "POST",
@@ -190,6 +190,7 @@ class AcoesSectiApi {
         "x-env": this.env,
         ...this.getAuthHeaders(),
       },
+      body: JSON.stringify({ linkDrive }),
     });
 
     if (!response.ok) {
@@ -198,6 +199,21 @@ class AcoesSectiApi {
         window.location.href = "/login";
       }
       throw new Error("Erro ao cadastrar ação");
+    }
+
+    const data = await response.json();
+    if (data && data.myField === "Drive negado") {
+      throw new Error("Drive negado");
+    }
+    // Verifica se a resposta é um array e contém um erro
+    if (Array.isArray(data) && data.length > 0 && data[0].error) {
+      const error = data[0].error;
+      if (
+        error.message === "The resource you are requesting could not be found" ||
+        error.name === "NodeApiError"
+      ) {
+        throw new Error("Drive negado");
+      }
     }
   }
 

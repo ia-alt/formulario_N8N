@@ -4,7 +4,7 @@ import type { AcaoComInscritos, Inscrito } from "../../shared/types";
 export interface IVisualizarAcaoService {
   getAcao(id: string): Promise<AcaoComInscritos | null>;
   cancelarAcao(id: string): Promise<void>;
-  concluirAcao(id: string): Promise<void>;
+  concluirAcao(id: string, linkDrive?: string): Promise<void>;
 }
 
 export interface IVisualizarAcaoContext {
@@ -12,7 +12,7 @@ export interface IVisualizarAcaoContext {
   acao: AcaoComInscritos | null;
   updateInscritos: (inscritos: Inscrito[]) => void;
   cancelarAcao: () => void;
-  finalizarAcao: () => void;
+  finalizarAcao: (linkDrive?: string) => Promise<void>;
 }
 
 const defaultValue: IVisualizarAcaoContext = {
@@ -20,7 +20,7 @@ const defaultValue: IVisualizarAcaoContext = {
   carregando: false,
   updateInscritos: () => {},
   cancelarAcao: () => {},
-  finalizarAcao: () => {},
+  finalizarAcao: async () => {},
 };
 
 export const VisualizarAcaoContext = createContext(defaultValue);

@@ -1,4 +1,4 @@
-import { Divider, Flex, Form, Modal, Switch, Typography } from "antd";
+import { Divider, Flex, Form, Modal, Switch, Typography, Checkbox } from "antd";
 import {
   forwardRef,
   Fragment,
@@ -20,6 +20,7 @@ type ModalChamadaProps = {
 const ModalChamadaComponent = forwardRef<ModalChamadaRef, ModalChamadaProps>(
   ({ onSave }, ref) => {
     const [form] = Form.useForm();
+    const presentes = Form.useWatch("presentes", form);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [dados, setDados] = useState<{
       acaoId: string;
@@ -104,6 +105,29 @@ const ModalChamadaComponent = forwardRef<ModalChamadaRef, ModalChamadaProps>(
         <Form.List name="presentes">
           {(fields) => (
             <>
+              <Flex align="center" style={{ paddingBottom: 8 }}>
+                <Typography.Text strong style={{ flex: 1 }}>
+                  Selecionar Todos
+                </Typography.Text>
+                <Checkbox
+                  checked={
+                    presentes?.length > 0 && presentes?.every((p: boolean) => p)
+                  }
+                  indeterminate={
+                    presentes?.some((p: boolean) => p) &&
+                    !presentes?.every((p: boolean) => p)
+                  }
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    const count = dados?.inscritos?.length || 0;
+                    form.setFieldValue(
+                      "presentes",
+                      new Array(count).fill(checked)
+                    );
+                  }}
+                />
+              </Flex>
+              <Divider style={{ margin: "0 0 16px 0" }} />
               {fields.map((field, index) => (
                 <Fragment key={field.key}>
                   <Flex>

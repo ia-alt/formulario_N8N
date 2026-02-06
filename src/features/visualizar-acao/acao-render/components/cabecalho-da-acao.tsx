@@ -11,7 +11,7 @@ import {
   type MenuProps,
   App,
 } from "antd";
-import type { FC } from "react";
+import { useState, type FC } from "react";
 import { useVisualizarAcao } from "../../hook";
 import {
   TeamOutlined,
@@ -20,6 +20,8 @@ import {
   CalendarOutlined,
 } from "@ant-design/icons";
 import type { StatusAcao } from "../../../../shared/types";
+
+import { ModalConcluirAcao } from "./modal-concluir-acao";
 
 const { Title, Text } = Typography;
 
@@ -38,29 +40,22 @@ const getStatusTag = (status: StatusAcao) => {
 };
 
 export const CabecalhoDaAcao: FC = () => {
-  const { acao, cancelarAcao, finalizarAcao } = useVisualizarAcao();
+  const { acao, cancelarAcao } = useVisualizarAcao();
   const { modal } = App.useApp();
+  const [modalConcluirOpen, setModalConcluirOpen] = useState(false);
 
   const onMenuClick: MenuProps["onClick"] = (e) => {
     console.log("click", e);
     if (!acao) return;
     switch (e.key) {
       case "concluir_acao":
-        modal.confirm({
-          title: "Concluir Ação",
-          content: "Antes de prosseguir garanta que a Chamada foi feita.",
-          cancelText: "Cancelar",
-          okText: "Concluir",
-          onOk: () => {
-            finalizarAcao();
-          },
-        });
+        setModalConcluirOpen(true);
         break;
       case "cancelar_acao":
         modal.confirm({
           title: "Cancelar Ação",
           content: "Você tem certeza que deseja cancelar esta ação?",
-          cancelText: "Não, mudei de ideia",
+          cancelText: "Não",
           okText: "Sim, cancelar",
           onOk: () => {
             cancelarAcao();
@@ -140,6 +135,10 @@ export const CabecalhoDaAcao: FC = () => {
           />
         </Col>
       </Row>
+      <ModalConcluirAcao
+        open={modalConcluirOpen}
+        onClose={() => setModalConcluirOpen(false)}
+      />
     </Card>
   );
 };

@@ -6,8 +6,8 @@ class VisualizarAcaoService implements IVisualizarAcaoService {
     return await acoesSectiApi.cancelarAcao(id);
   }
 
-  async concluirAcao(id: string): Promise<void> {
-    return await acoesSectiApi.concluirAcao(id);
+  async concluirAcao(id: string, linkDrive?: string): Promise<void> {
+    return await acoesSectiApi.concluirAcao(id, linkDrive);
   }
 
   async getAcao(id: string) {

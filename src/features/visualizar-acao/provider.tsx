@@ -63,12 +63,11 @@ export const VisualizarAcaoProvider: FC<PropsWithChildren<{ id: string }>> = ({
       });
   }, [acao, navigate]);
 
-  const finalizarAcao = useCallback(() => {
-    if (!acao) return;
-    setCarregando(true);
-    visualizarAcaoService
-      .concluirAcao(acao.id)
-      .then(() => {
+  const finalizarAcao = useCallback(
+    async (linkDrive?: string) => {
+      if (!acao) return;
+      try {
+        await visualizarAcaoService.concluirAcao(acao.id, linkDrive);
         setAcao((acao) =>
           acao
             ? {
@@ -77,14 +76,13 @@ export const VisualizarAcaoProvider: FC<PropsWithChildren<{ id: string }>> = ({
               }
             : null
         );
-      })
-      .catch((e) => {
+      } catch (e) {
         console.log(e);
-      })
-      .finally(() => {
-        setCarregando(false);
-      });
-  }, [acao]);
+        throw e;
+      }
+    },
+    [acao]
+  );
 
   const value = useMemo(
     () => ({
