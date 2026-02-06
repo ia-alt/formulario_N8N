@@ -1,4 +1,4 @@
-import { Divider, Flex, Form, Modal, Switch, Typography, Checkbox } from "antd";
+import { Divider, Flex, Form, Modal, Switch, Typography } from "antd";
 import {
   forwardRef,
   Fragment,
@@ -109,16 +109,11 @@ const ModalChamadaComponent = forwardRef<ModalChamadaRef, ModalChamadaProps>(
                 <Typography.Text strong style={{ flex: 1 }}>
                   Selecionar Todos
                 </Typography.Text>
-                <Checkbox
+                <Switch
                   checked={
                     presentes?.length > 0 && presentes?.every((p: boolean) => p)
                   }
-                  indeterminate={
-                    presentes?.some((p: boolean) => p) &&
-                    !presentes?.every((p: boolean) => p)
-                  }
-                  onChange={(e) => {
-                    const checked = e.target.checked;
+                  onChange={(checked) => {
                     const count = dados?.inscritos?.length || 0;
                     form.setFieldValue(
                       "presentes",

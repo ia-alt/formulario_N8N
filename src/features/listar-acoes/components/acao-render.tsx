@@ -8,8 +8,10 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router";
 
 export const AcaoRender: FC<{ acao: Acao }> = ({ acao }) => {
+  const navigate = useNavigate();
   return (
     <>
       <Card
@@ -27,9 +29,7 @@ export const AcaoRender: FC<{ acao: Acao }> = ({ acao }) => {
             <Button
               size="small"
               icon={<EyeOutlined />}
-              href={"/acoes/" + acao.id}
-              target="_blank"
-              rel="noopener noreferrer"
+              onClick={() => navigate("/acoes/" + acao.id)}
             >
               Visualizar
             </Button>
