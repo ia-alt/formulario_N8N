@@ -1,13 +1,4 @@
-import {
-  Layout,
-  Form,
-  Input,
-  Button,
-  Card,
-  Typography,
-  Flex,
-  App,
-} from "antd";
+import { Layout, Form, Input, Button, Card, Typography, Flex, App } from "antd";
 import { type FC, useState } from "react";
 import { useNavigate } from "react-router";
 import { loginService } from "./service";
@@ -56,16 +47,15 @@ export const LoginPage: FC = () => {
                 Acesso ao Sistema
               </Title>
 
-              <Form
-                layout="vertical"
-                onFinish={onFinish}
-                autoComplete="off"
-              >
+              <Form layout="vertical" onFinish={onFinish} autoComplete="off">
                 <Form.Item
                   label="Usuário"
                   name="usuario"
                   rules={[
-                    { required: true, message: "Por favor, insira seu Usuário!" }
+                    {
+                      required: true,
+                      message: "Por favor, insira seu Usuário!",
+                    },
                   ]}
                 >
                   <Input placeholder="Usuário" />
@@ -78,10 +68,10 @@ export const LoginPage: FC = () => {
                     {
                       required: true,
                       message: "Por favor, insira sua senha!",
-                    }
+                    },
                   ]}
                 >
-                  <Input placeholder="Senha" />
+                  <Input placeholder="Senha" type={"password"} />
                 </Form.Item>
 
                 <Form.Item>
