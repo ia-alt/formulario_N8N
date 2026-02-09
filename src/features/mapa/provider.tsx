@@ -15,11 +15,11 @@ import type {
   IMapaContext,
 } from "./types";
 import { APIProvider, useMap } from "@vis.gl/react-google-maps";
-import { googleMapsKey } from "./contants";
 import { cidadesMaranhao } from "../cadastrar-acao/constants";
+import { env } from "../../env";
 export const MapaProvider: FC<PropsWithChildren> = ({ children }) => {
   return (
-    <APIProvider apiKey={googleMapsKey}>
+    <APIProvider apiKey={env.googleMapsKey}>
       <InnerMapaProvider>{children}</InnerMapaProvider>
     </APIProvider>
   );
@@ -43,28 +43,32 @@ export const InnerMapaProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [acoes, filtro]);
 
   const listaVerde = useMemo(() => {
-    const cidadesUnicas =  Array.from(
+    const cidadesUnicas = Array.from(
       new Set(
         acoesFiltradas
           .map((x) => x.municipio.split(","))
           .flat()
-          .map((x) => x.trim())
-      )
+          .map((x) => x.trim()),
+      ),
     ).sort((a, b) => a.localeCompare(b));
 
-    const cidaedesinvalidas =cidadesUnicas.filter((cidade) => !cidadesMaranhao.includes(cidade));
-    if (cidaedesinvalidas.length >0) {
-       console.warn("Cidades inválidas encontradas nas ações:", cidaedesinvalidas);
-      return []
+    const cidaedesinvalidas = cidadesUnicas.filter(
+      (cidade) => !cidadesMaranhao.includes(cidade),
+    );
+    if (cidaedesinvalidas.length > 0) {
+      console.warn(
+        "Cidades inválidas encontradas nas ações:",
+        cidaedesinvalidas,
+      );
+      return [];
     }
-
 
     return cidadesUnicas;
   }, [acoesFiltradas]);
 
   useEffect(() => {
     fetch(
-      "https://n8n.atomotriz.com/webhook/50026eab-c6e0-47d0-beb8-d433d34301bd"
+      "https://n8n.atomotriz.com/webhook/50026eab-c6e0-47d0-beb8-d433d34301bd",
     )
       .then((x) => x.json() as Promise<AcaoJson[]>)
       .then((x) => setAcoes(x.map(acaoJsonToAcao)));
@@ -72,16 +76,16 @@ export const InnerMapaProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const filtroOptions = useMemo(() => {
     const eixo_responsavel = Array.from(
-      new Set(acoes.map((x) => x.eixo_responsavel))
+      new Set(acoes.map((x) => x.eixo_responsavel)),
     ).sort((a, b) => a.localeCompare(b));
     const tipo_acao = Array.from(new Set(acoes.map((x) => x.tipo_acao))).sort(
-      (a, b) => a.localeCompare(b)
+      (a, b) => a.localeCompare(b),
     );
     const Modalidade = Array.from(new Set(acoes.map((x) => x.Modalidade))).sort(
-      (a, b) => a.localeCompare(b)
+      (a, b) => a.localeCompare(b),
     );
     const publico_alvo = Array.from(
-      new Set(acoes.map((x) => x.publico_alvo))
+      new Set(acoes.map((x) => x.publico_alvo)),
     ).sort((a, b) => a.localeCompare(b));
 
     const options: FiltroOptions = {
@@ -96,7 +100,7 @@ export const InnerMapaProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const value: IMapaContext = useMemo(
     () => ({ map: map!, listaVerde, filtroOptions }),
-    [map, listaVerde, filtroOptions]
+    [map, listaVerde, filtroOptions],
   );
 
   console.log(value);
