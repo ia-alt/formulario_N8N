@@ -8,7 +8,9 @@ import {
 } from "@ant-design/icons";
 
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("pt-BR", {
+  if (!dateString) return "";
+  const [year, month, day] = dateString.split("-").map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString("pt-BR", {
     weekday: "long",
     day: "numeric",
     month: "long",
