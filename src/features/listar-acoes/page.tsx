@@ -3,6 +3,7 @@ import { ListarAcoesProvider } from "./provider";
 import { Button, Flex, Layout, Space, Typography, Spin } from "antd";
 import { useListarAcoes } from "./hooks";
 import { AcaoRender } from "./components/acao-render";
+import { FiltroAcoes } from "./components/filtro-acoes";
 import {
   EnvironmentOutlined,
   LineChartOutlined,
@@ -65,7 +66,9 @@ const InnerListarAcoesPage: FC = () => {
             </Space>
           </Flex>
 
-          <div style={{ marginTop: 70 }}>
+          <FiltroAcoes />
+
+          <div style={{ marginTop: 24 }}>
             <Spin spinning={carregando} tip="Carregando ações..." size="large">
               <Flex
                 orientation="vertical"

@@ -7,4 +7,6 @@ export interface IListarAcoesService {
 export interface IListarAcoesContext {
   carregando: boolean;
   acoes: Acao[];
+  filtroEixo: string | null;
+  setFiltroEixo: (eixo: string | null) => void;
 }

@@ -12,7 +12,8 @@ import type { Acao } from "../../shared/types";
 import { listarAcoesService } from "./service";
 
 export const ListarAcoesProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [acoes, setAcoes] = useState<Acao[]>([]);
+  const [todasAcoes, setTodasAcoes] = useState<Acao[]>([]);
+  const [filtroEixo, setFiltroEixo] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(true);
 
   const fetchAcoes = useCallback(() => {
@@ -20,7 +21,12 @@ export const ListarAcoesProvider: FC<PropsWithChildren> = ({ children }) => {
     listarAcoesService
       .listarAcoes()
       .then((acoes) => {
-        setAcoes(acoes);
+        const sortedAcoes = [...acoes].sort((a, b) => {
+          if (a.status === "ATIVA" && b.status !== "ATIVA") return -1;
+          if (a.status !== "ATIVA" && b.status === "ATIVA") return 1;
+          return 0;
+        });
+        setTodasAcoes(sortedAcoes);
       })
       .catch((e) => {
         console.log(e);
@@ -35,12 +41,19 @@ export const ListarAcoesProvider: FC<PropsWithChildren> = ({ children }) => {
     void fetchAcoes();
   }, [fetchAcoes]);
 
+  const acoesFiltradas = useMemo(() => {
+    if (!filtroEixo) return todasAcoes;
+    return todasAcoes.filter((acao) => acao.eixo === filtroEixo);
+  }, [todasAcoes, filtroEixo]);
+
   const value: IListarAcoesContext = useMemo(
     () => ({
-      acoes,
+      acoes: acoesFiltradas,
       carregando,
+      filtroEixo,
+      setFiltroEixo,
     }),
-    [acoes, carregando]
+    [acoesFiltradas, carregando, filtroEixo]
   );
   return (
     <ListarAcoesContext.Provider value={value}>
