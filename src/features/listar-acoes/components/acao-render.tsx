@@ -56,19 +56,6 @@ export const AcaoRender: FC<{ acao: Acao }> = ({ acao }) => {
               </Typography.Text>
             </Space>
           </Flex>
-          <Flex justify="center" align="center">
-            <Tag
-              color={
-                acao.status === "ATIVA"
-                  ? "blue"
-                  : acao.status === "CONCLUIDA"
-                  ? "green"
-                  : "red"
-              }
-            >
-              {acao.status}
-            </Tag>
-          </Flex>
         </Flex>
       </Card>
     </>

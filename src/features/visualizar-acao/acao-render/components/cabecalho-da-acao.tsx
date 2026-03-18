@@ -19,25 +19,9 @@ import {
   EllipsisOutlined,
   CalendarOutlined,
 } from "@ant-design/icons";
-import type { StatusAcao } from "../../../../shared/types";
-
 import { ModalConcluirAcao } from "./modal-concluir-acao";
 
 const { Title, Text } = Typography;
-
-// --- Helpers de UX ---
-const getStatusTag = (status: StatusAcao) => {
-  switch (status) {
-    case "ATIVA":
-      return <Tag color="success">ATIVA</Tag>;
-    case "CONCLUIDA":
-      return <Tag color="default">CONCLUÍDA</Tag>;
-    case "CANCELADA":
-      return <Tag color="error">CANCELADA</Tag>;
-    default:
-      return <Tag>{status}</Tag>;
-  }
-};
 
 export const CabecalhoDaAcao: FC = () => {
   const { acao, cancelarAcao } = useVisualizarAcao();
@@ -74,7 +58,6 @@ export const CabecalhoDaAcao: FC = () => {
         <Col>
           <Space orientation="vertical" size={0}>
             <Space>
-              {getStatusTag(acao.status)}
               <Tag color="blue">{acao.tipo}</Tag>
               <Text type="secondary">#{acao.id}</Text>
             </Space>
