@@ -7,46 +7,33 @@ import {
   Tag,
   Typography,
   Button,
-  Dropdown,
-  type MenuProps,
   App,
 } from "antd";
-import { useState, type FC } from "react";
+import { type FC } from "react";
 import { useVisualizarAcao } from "../../hook";
 import {
   TeamOutlined,
   BookOutlined,
-  EllipsisOutlined,
+  DeleteOutlined,
   CalendarOutlined,
 } from "@ant-design/icons";
-import { ModalConcluirAcao } from "./modal-concluir-acao";
 
 const { Title, Text } = Typography;
 
 export const CabecalhoDaAcao: FC = () => {
   const { acao, cancelarAcao } = useVisualizarAcao();
   const { modal } = App.useApp();
-  const [modalConcluirOpen, setModalConcluirOpen] = useState(false);
 
-  const onMenuClick: MenuProps["onClick"] = (e) => {
-    console.log("click", e);
-    if (!acao) return;
-    switch (e.key) {
-      case "concluir_acao":
-        setModalConcluirOpen(true);
-        break;
-      case "cancelar_acao":
-        modal.confirm({
-          title: "Cancelar Ação",
-          content: "Você tem certeza que deseja cancelar esta ação?",
-          cancelText: "Não",
-          okText: "Sim, cancelar",
-          onOk: () => {
-            cancelarAcao();
-          },
-        });
-        break;
-    }
+  const onCancelar = () => {
+    modal.confirm({
+      title: "Cancelar Ação",
+      content: "Você tem certeza que deseja cancelar esta ação?",
+      cancelText: "Não",
+      okText: "Sim, cancelar",
+      onOk: () => {
+        cancelarAcao();
+      },
+    });
   };
 
   if (!acao) {
@@ -74,26 +61,11 @@ export const CabecalhoDaAcao: FC = () => {
               Abrir no Calendar
             </Button>
             {acao?.status === "ATIVA" && (
-              <Dropdown
-                trigger={["click"]}
-                menu={{
-                  items: [
-                    {
-                      key: "concluir_acao",
-                      label: "Concluir Ação",
-                    },
-                    {
-                      key: "cancelar_acao",
-                      label: "Cancelar Ação",
-                      danger: true,
-                    },
-                  ],
-                  onClick: onMenuClick,
-                }}
-                placement="bottomRight"
-              >
-                <Button icon={<EllipsisOutlined />}>Opções</Button>
-              </Dropdown>
+              <Button
+                danger
+                icon={<DeleteOutlined />}
+                onClick={onCancelar}
+              />
             )}
           </Space>
         </Col>
@@ -117,10 +89,6 @@ export const CabecalhoDaAcao: FC = () => {
           />
         </Col>
       </Row>
-      <ModalConcluirAcao
-        open={modalConcluirOpen}
-        onClose={() => setModalConcluirOpen(false)}
-      />
     </Card>
   );
 };
