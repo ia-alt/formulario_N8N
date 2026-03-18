@@ -110,9 +110,8 @@ export const CabecalhoDaAcao: FC = () => {
           </Space>
         </Col>
         <Col>
-          {/* Estatística rápida (KPI) */}
           <Statistic
-            title="Total de Inscritos"
+            title="Total de Impactados"
             value={acao.inscritos.length}
             prefix={<TeamOutlined />}
           />

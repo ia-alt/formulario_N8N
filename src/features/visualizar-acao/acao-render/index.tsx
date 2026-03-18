@@ -1,10 +1,9 @@
 import type { FC } from "react";
-import { Space, Layout, Button, Flex, Typography } from "antd";
+import { Layout, Button, Flex, Typography } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router";
 import { CabecalhoDaAcao } from "./components/cabecalho-da-acao";
 import { InformacoesDaAcao } from "./components/informacoes-da-acao";
-import { ListaDeInscritos } from "./components/lista-de-inscritos";
 
 export const AcaoRender: FC = () => {
   const navigate = useNavigate();
@@ -35,15 +34,7 @@ export const AcaoRender: FC = () => {
 
           <CabecalhoDaAcao />
 
-          <Space
-            orientation="vertical"
-            size="middle"
-            style={{ display: "flex" }}
-          >
-            <InformacoesDaAcao />
-
-            <ListaDeInscritos />
-          </Space>
+          <InformacoesDaAcao />
         </div>
       </Layout.Content>
     </Layout>
