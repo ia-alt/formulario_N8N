@@ -95,14 +95,14 @@ export const CadastrarAcaoPage: FC = () => {
     cadastrarAcaoService
       .cadastrarAcao(dados)
       .then(({ id }) => {
-        message.success("Ação cadastrada com sucesso!");
+        message.success("Ação registrada com sucesso!");
         console.log("Sucesso. Id:", id);
         setCarregando(false);
         window.open(`/acoes/${id}`, "_blank", "noopener,noreferrer");
         navigate("/");
       })
       .catch((e) => {
-        message.error("Erro ao cadastrar ação!");
+        message.error("Erro ao registrar ação!");
         console.log(e);
         setCarregando(false);
       });
@@ -176,9 +176,9 @@ export const CadastrarAcaoPage: FC = () => {
             <Button type="text" onClick={() => navigate("/")}>
               <ArrowLeftOutlined />
             </Button>
-            <Typography.Title style={{ margin: 0 }}>Cadastrar Ação</Typography.Title>
+            <Typography.Title style={{ margin: 0 }}>Registrar Ação</Typography.Title>
           </Flex>
-          <Spin spinning={carregando} fullscreen tip="Cadastrando ação..." size="large" />
+          <Spin spinning={carregando} fullscreen tip="Registrando ação..." size="large" />
           <Form
             layout="vertical"
             form={form}
@@ -461,7 +461,7 @@ export const CadastrarAcaoPage: FC = () => {
                 )}
                 <Flex justify="center" align="center">
                   <Button disabled={formularioInscricaoMode === 'url' && (!verificationInfo?.temAcessoForm || !verificationInfo?.temPlanilhaVinculada || !verificationInfo?.temAcessoPlanilhaRespostas)} type="primary" htmlType="submit" loading={carregando}>
-                    Cadastrar
+                    Registrar
                   </Button>
                 </Flex>
               </Space>

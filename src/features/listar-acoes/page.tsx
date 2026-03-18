@@ -61,7 +61,7 @@ const InnerListarAcoesPage: FC = () => {
                 icon={<PlusOutlined />}
                 href={"/cadastrar"}
               >
-                Cadastrar
+                Registrar
               </Button>
             </Space>
           </Flex>
