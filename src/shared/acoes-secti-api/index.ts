@@ -1,5 +1,5 @@
 import { env } from "../../env";
-import type { Acao, AcaoComInscritos, FormularioInfo } from "../types";
+import type { Acao, AcaoComInscritos, FormularioInfo, Inscrito } from "../types";
 export type { FormularioInfo };
 
 export type DadosCadastroAcao = {
@@ -8,21 +8,14 @@ export type DadosCadastroAcao = {
   publicoAlvo: string;
   cargaHoraria: number;
   eixo: string;
+  eixosAuxiliares: string[];
+  quantidadeImpactados: number;
   local: string;
   cidade: string;
   data: string;
   horarioInicio: string;
   horarioFim: string;
-} & (
-  | {
-      camposFormularioInscricao: Campo[];
-      formularioInscricaoUrl?: never;
-    }
-  | {
-      formularioInscricaoUrl: string;
-      camposFormularioInscricao?: never;
-    }
-);
+};
 
 
 
@@ -174,11 +167,40 @@ class AcoesSectiApi {
       throw new Error("Erro ao cadastrar ação");
     }
 
-    const data = (await response.json()) as AcaoComInscritos;
-    return {
-      ...data,
-      inscritos: data.inscritos.sort((a, b) => a.nome.localeCompare(b.nome)),
+    const rawData = await response.json();
+    const raw = Array.isArray(rawData) ? rawData[0] : rawData;
+    if (!raw) return null;
+
+    // O endpoint retorna campos com nomes da planilha, precisamos mapear para o tipo Acao
+    const isMapped = "titulo" in raw || "id" in raw;
+    if (isMapped) {
+      const data = raw as AcaoComInscritos;
+      return {
+        ...data,
+        inscritos: (data.inscritos ?? []).sort((a, b) => a.nome.localeCompare(b.nome)),
+      };
+    }
+
+    const acao: AcaoComInscritos = {
+      id: String(raw["Id do evento"] ?? ""),
+      titulo: raw["Nome do Evento"] ?? "",
+      eixo: raw["Eixo Responsável "] ?? raw["Eixo Responsavel"] ?? "",
+      eixos_auxiliares: raw["Eixos Auxiliares"] ?? "",
+      data: raw["Data do Evento"] ?? "",
+      cargaHoraria: Number(raw["Carga Horaria "] ?? raw["Carga Horaria"] ?? 0),
+      horarioInicio: raw["Hora de Início"] ?? raw["Hora de Inicio"] ?? "",
+      horarioFim: raw["Hora do Fim"] ?? "",
+      tipo: raw["Tipo da acão"] ?? raw["Tipo da acao"] ?? "",
+      municipio: raw["Município"] ?? raw["Municipio"] ?? "",
+      local: raw["Local"] ?? "",
+      status: raw["status"] ?? "ATIVA",
+      linkFormularioInscricao: raw["linkFormularioInscricao"] ?? "",
+      linkEditarFormularioInscricao: raw["linkEditarFormularioInscricao"] ?? "",
+      linkPlanilhaInscritos: raw["linkPlanilhaInscritos"] ?? "",
+      linkGoogleCalendar: raw["linkGoogleCalendar"] ?? "",
+      inscritos: (raw["inscritos"] ?? []).sort((a: Inscrito, b: Inscrito) => a.nome.localeCompare(b.nome)),
     };
+    return acao;
   }
 
   async concluirAcao(id: string, linkDrive?: string): Promise<void> {

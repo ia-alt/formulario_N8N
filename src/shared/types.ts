@@ -9,7 +9,8 @@ export type StatusAcao = "ATIVA" | "CONCLUIDA" | "CANCELADA";
 export type Acao = {
   id: string;
   status: StatusAcao;
-  eixo: string;
+  eixo?: string;
+  eixos_auxiliares?: string; // string separada por vírgulas
   titulo: string;
   local: string;
   municipio: string;

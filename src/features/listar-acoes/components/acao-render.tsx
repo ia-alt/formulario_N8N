@@ -38,10 +38,16 @@ export const AcaoRender: FC<{ acao: Acao }> = ({ acao }) => {
       >
         <Flex orientation="horizontal" justify="space-between">
           <Flex orientation="vertical" gap={8}>
-            <Space>
-              <BookOutlined />{" "}
-              <Typography.Text type="secondary">{acao.eixo}</Typography.Text>
-            </Space>
+            {(acao.eixo || acao.eixos_auxiliares) && (
+              <Space>
+                <BookOutlined />{" "}
+                <Typography.Text type="secondary">
+                  {[acao.eixo, acao.eixos_auxiliares]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </Typography.Text>
+              </Space>
+            )}
             <Space>
               <EnvironmentOutlined />
               <Typography.Text type="secondary">

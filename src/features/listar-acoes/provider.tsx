@@ -21,12 +21,7 @@ export const ListarAcoesProvider: FC<PropsWithChildren> = ({ children }) => {
     listarAcoesService
       .listarAcoes()
       .then((acoes) => {
-        const sortedAcoes = [...acoes].sort((a, b) => {
-          if (a.status === "ATIVA" && b.status !== "ATIVA") return -1;
-          if (a.status !== "ATIVA" && b.status === "ATIVA") return 1;
-          return 0;
-        });
-        setTodasAcoes(sortedAcoes);
+        setTodasAcoes(acoes);
       })
       .catch((e) => {
         console.log(e);

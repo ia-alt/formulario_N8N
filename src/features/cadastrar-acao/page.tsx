@@ -9,7 +9,6 @@ import {
   InputNumber,
   Space,
   Button,
-  Checkbox,
   Card,
   AutoComplete,
   Row,
@@ -18,15 +17,12 @@ import {
   App,
   Spin,
   Radio,
-  Tooltip,
 } from "antd";
-import { ArrowLeftOutlined, MinusCircleOutlined, PlusOutlined, SearchOutlined, CheckCircleOutlined, CloseCircleOutlined, QuestionCircleOutlined, LoadingOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useState, type FC } from "react";
 import {
   cidadesMaranhao,
   departamentos,
-  camposPadroes,
-  tiposCampo,
   tiposDeAcao,
   publicosAlvos,
 } from "./constants";
@@ -34,7 +30,7 @@ import { removeDiacritics } from "../../helpers/remove-diacritics";
 import dayjs from "dayjs";
 import { cadastrarAcaoService } from "./service";
 import { useNavigate } from "react-router";
-import { acoesSectiApi, type DadosCadastroAcao, type FormularioInfo } from "../../shared/acoes-secti-api";
+import { type DadosCadastroAcao } from "../../shared/acoes-secti-api";
 import { env } from "../../env";
 
 type FormData = Omit<
@@ -61,42 +57,30 @@ const initial: Partial<FormData> = {
         horarioFim: dayjs().set("hour", 12).set("minute", 0),
       }
     : {}),
-
-  camposFormularioInscricao: [
-    ...camposPadroes.obrigatorios,
-    ...camposPadroes.naoObrigatorios,
-  ],
+  eixosAuxiliares: [],
 };
 
 export const CadastrarAcaoPage: FC = () => {
   const [form] = Form.useForm<FormData>();
   const [carregando, setCarregando] = useState(false);
-  const [verificandoUrl, setVerificandoUrl] = useState(false);
-  const [verificationInfo, setVerificationInfo] = useState<FormularioInfo | null>(null);
-  const [formularioInscricaoMode, setFormularioInscricaoMode] = useState<'url' | 'campos'>('campos');
   const { message } = App.useApp();
   const navigate = useNavigate();
 
+  const eixoSelecionado = Form.useWatch("eixo", form);
+  const modalidade = Form.useWatch("modalidade", form);
+
   function onFinish(values: FormData) {
     setCarregando(true);
-    const { camposFormularioInscricao, formularioInscricaoUrl, ...otherValues } = values;
     const dados: DadosCadastroAcao = {
-      ...otherValues,
+      ...values,
       data: values.data.format("YYYY-MM-DD"),
       horarioInicio: values.horarioInicio.format("HH:mm"),
       horarioFim: values.horarioFim.format("HH:mm"),
-      ...(
-        formularioInscricaoMode === 'url'
-          ? { formularioInscricaoUrl: formularioInscricaoUrl! }
-          : { camposFormularioInscricao: camposFormularioInscricao! }
-      )
     };
-    console.log(dados);
     cadastrarAcaoService
       .cadastrarAcao(dados)
       .then(({ id }) => {
         message.success("Ação registrada com sucesso!");
-        console.log("Sucesso. Id:", id);
         setCarregando(false);
         window.open(`/acoes/${id}`, "_blank", "noopener,noreferrer");
         navigate("/");
@@ -108,71 +92,11 @@ export const CadastrarAcaoPage: FC = () => {
       });
   }
 
-  function handleFormularioInscricaoModeChange(value: 'url' | 'campos') {
-    setFormularioInscricaoMode(value);
-    setVerificationInfo(null);
-    form.resetFields(['formularioInscricaoUrl', 'camposFormularioInscricao']);
-  }
-
-  async function handleVerificarUrl() {
-    const url = form.getFieldValue("formularioInscricaoUrl");
-    if (!url) {
-      message.warning("Por favor, insira a URL do formulário.");
-      return;
-    }
-
-    setVerificandoUrl(true);
-    setVerificationInfo(null);
-    try {
-      const info = await acoesSectiApi.verificaGoogleForms(url);
-      setVerificationInfo(info);
-      
-      if (info.temAcessoForm && 'temPlanilhaVinculada' in info && info.temPlanilhaVinculada && 'temAcessoPlanilhaRespostas' in info && info.temAcessoPlanilhaRespostas) {
-         message.success("Formulário verificado com sucesso!");
-      } else {
-         message.warning("Verifique os itens pendentes no checklist.");
-      }
-
-    } catch (error) {
-      console.error(error);
-      message.error("Erro ao verificar o formulário. Tente novamente.");
-    } finally {
-      setVerificandoUrl(false);
-    }
-  }
-
-  const getChecklistIcon = (step: 1 | 2 | 3) => {
-    if (verificandoUrl) return <LoadingOutlined />;
-    
-    let status: 'pending' | 'success' | 'error' | 'blocked' = 'pending';
-
-    if (!verificationInfo) {
-      status = 'pending';
-    } else {
-       if (step === 1) {
-          status = verificationInfo.temAcessoForm ? 'success' : 'error';
-       } else if (step === 2) {
-          if (!verificationInfo.temAcessoForm) status = 'blocked';
-          else status = verificationInfo.temPlanilhaVinculada ? 'success' : 'error';
-       } else if (step === 3) {
-          if (!verificationInfo.temAcessoForm || !('temPlanilhaVinculada' in verificationInfo) || !verificationInfo.temPlanilhaVinculada) status = 'blocked';
-          else status = verificationInfo.temAcessoPlanilhaRespostas ? 'success' : 'error';
-       }
-    }
-
-    switch (status) {
-      case 'success': return <CheckCircleOutlined style={{ color: '#52c41a' }} />;
-      case 'error': return <CloseCircleOutlined style={{ color: '#ff4d4f' }} />;
-      case 'blocked': return <MinusCircleOutlined style={{ color: '#d9d9d9' }} />;
-      case 'pending': default: return <QuestionCircleOutlined style={{ color: '#d9d9d9' }} />;
-    }
-  };
-
   return (
     <Layout>
       <Layout.Content>
         <div style={{ padding: "24px", maxWidth: "900px", margin: "0 auto" }}>
-          <Flex orientation="horizontal" gap={"large"} align="center"  style={{ marginBottom: "24px" }}>
+          <Flex orientation="horizontal" gap={"large"} align="center" style={{ marginBottom: "24px" }}>
             <Button type="text" onClick={() => navigate("/")}>
               <ArrowLeftOutlined />
             </Button>
@@ -183,95 +107,137 @@ export const CadastrarAcaoPage: FC = () => {
             layout="vertical"
             form={form}
             onFinish={onFinish}
-              initialValues={initial}
-              onFinishFailed={(e) => console.log(e)}
-            >
-              <Space orientation="vertical" size={"large"}>
-                <Card>
-                  <Row gutter={16}>
-                    <Col md={24}>
-                      <Form.Item<FormData>
-                        name="nome"
-                        label="Nome da Ação"
-                        rules={[{ required: true, message: "Obrigatório" }]}
-                      >
-                        <Input />
-                      </Form.Item>
-                    </Col>
-                    <Col md={6}>
-                      <Form.Item<FormData>
-                        name="tipo"
-                        label="Tipo"
-                        rules={[{ required: true, message: "Obrigatório" }]}
-                      >
-                        <Select>
-                          {tiposDeAcao.map((tipo) => (
-                            <Select.Option key={tipo} value={tipo}>
-                              {tipo}
-                            </Select.Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
-                    </Col>
-                    <Col md={6}>
-                      <Form.Item<FormData>
-                        name="publicoAlvo"
-                        label="Público Alvo"
-                        help="Selecione ou digite um novo"
-                        rules={[{ required: true }]}
-                      >
-                        <AutoComplete
-                          options={publicosAlvos}
-                          placeholder=""
-                          showSearch={{
-                            filterOption: (inputValue, option) =>
-                              option!.value
-                                .toUpperCase()
-                                .includes(inputValue.toUpperCase()),
-                          }}
-                        />
-                      </Form.Item>
-                    </Col>
+            initialValues={initial}
+            onFinishFailed={(e) => console.log(e)}
+          >
+            <Space orientation="vertical" size={"large"}>
+              <Card>
+                <Row gutter={16}>
+                  <Col md={24}>
+                    <Form.Item<FormData>
+                      name="nome"
+                      label="Nome da Ação"
+                      rules={[{ required: true, message: "Obrigatório" }]}
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Item<FormData>
+                      name="tipo"
+                      label="Tipo"
+                      rules={[{ required: true, message: "Obrigatório" }]}
+                    >
+                      <Select>
+                        {tiposDeAcao.map((tipo) => (
+                          <Select.Option key={tipo} value={tipo}>
+                            {tipo}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Item<FormData>
+                      name="publicoAlvo"
+                      label="Público Alvo"
+                      help="Selecione ou digite um novo"
+                      rules={[{ required: true }]}
+                    >
+                      <AutoComplete
+                        options={publicosAlvos}
+                        placeholder=""
+                        showSearch={{
+                          filterOption: (inputValue, option) =>
+                            option!.value
+                              .toUpperCase()
+                              .includes(inputValue.toUpperCase()),
+                        }}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Item<FormData>
+                      name="eixo"
+                      label="Eixo Responsável"
+                      rules={[{ required: true, message: "Obrigatório" }]}
+                    >
+                      <Select>
+                        {departamentos.map((eixo) => (
+                          <Select.Option key={eixo} value={eixo}>
+                            {eixo}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Item<FormData>
+                      name="cargaHoraria"
+                      label="Carga Horária"
+                      help="Em horas"
+                      rules={[{ required: true }]}
+                    >
+                      <InputNumber precision={0} mode="spinner" min={1} />
+                    </Form.Item>
+                  </Col>
+                  <Col md={18}>
+                    <Form.Item<FormData>
+                      name="eixosAuxiliares"
+                      label="Eixos Auxiliares"
+                    >
+                      <Select
+                        mode="multiple"
+                        placeholder="Selecione os eixos que auxiliaram (opcional)"
+                        options={departamentos
+                          .filter((d) => d !== eixoSelecionado)
+                          .map((d) => ({ label: d, value: d }))}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Item<FormData>
+                      name="quantidadeImpactados"
+                      label="Qtd. de Impactadas"
+                      rules={[{ required: true, message: "Obrigatório" }]}
+                    >
+                      <InputNumber precision={0} min={0} style={{ width: "100%" }} />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Card>
 
-                    <Col md={6}>
-                      <Form.Item<FormData>
-                        name="eixo"
-                        label="Eixo"
-                        rules={[{ required: true }]}
+              <Card title="Local, Data e Horário">
+                <Row gutter={16}>
+                  <Col md={24}>
+                    <Form.Item name="modalidade" initialValue="presencial">
+                      <Radio.Group
+                        onChange={(e) => {
+                          if (e.target.value === "remota") {
+                            form.setFieldsValue({ local: "Remota", cidade: undefined });
+                          } else {
+                            form.setFieldsValue({ local: undefined });
+                          }
+                        }}
                       >
-                        <Select>
-                          {departamentos.map((eixo) => (
-                            <Select.Option key={eixo} value={eixo}>
-                              {eixo}
-                            </Select.Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
-                    </Col>
-                    <Col md={6}>
-                      <Form.Item<FormData>
-                        name="cargaHoraria"
-                        label="Carga Horária"
-                        help="Em horas"
-                        rules={[{ required: true }]}
-                      >
-                        <InputNumber precision={0} mode="spinner" min={1} />
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                </Card>
-
-                <Card title="Local, Data e Horário">
-                  <Row gutter={16}>
-                    <Col md={18}>
-                      <Form.Item<FormData>
-                        name="local"
-                        label="Local"
-                        rules={[{ required: true }]}
-                      >
-                        <Input placeholder="Ex.: Estação Tech Nina Rodrigues, IEMA Tamancão" />
-                      </Form.Item>
-                    </Col>
+                        <Radio value="presencial">Presencial</Radio>
+                        <Radio value="remota">Remota</Radio>
+                      </Radio.Group>
+                    </Form.Item>
+                  </Col>
+                  <Col md={modalidade === "remota" ? 24 : 18}>
+                    <Form.Item<FormData>
+                      name="local"
+                      label="Local"
+                      rules={[{ required: true }]}
+                    >
+                      <Input
+                        disabled={modalidade === "remota"}
+                        placeholder="Ex.: Estação Tech Nina Rodrigues, IEMA Tamancão"
+                      />
+                    </Form.Item>
+                  </Col>
+                  {modalidade !== "remota" && (
                     <Col md={6}>
                       <Form.Item<FormData>
                         name="cidade"
@@ -293,179 +259,53 @@ export const CadastrarAcaoPage: FC = () => {
                         />
                       </Form.Item>
                     </Col>
-                    <Col md={8}>
-                      <Form.Item<FormData>
-                        name="data"
-                        label="Data"
-                        rules={[{ required: true }]}
-                      >
-                        <DatePicker
-                          style={{ width: "100%" }}
-                          format={"DD/MM/YYYY"}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col md={8}>
-                      <Form.Item<FormData>
-                        name="horarioInicio"
-                        label="Horário de Início"
-                        rules={[{ required: true }]}
-                      >
-                        <TimePicker
-                          style={{ width: "100%" }}
-                          format={"HH:mm"}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col md={8}>
-                      <Form.Item<FormData>
-                        name="horarioFim"
-                        label="Horário de Término"
-                        rules={[{ required: true }]}
-                      >
-                        <TimePicker
-                          style={{ width: "100%" }}
-                          format={"HH:mm"}
-                        />
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                </Card>
-
-                <Card title="Configuração da Inscrição">
-                  <Form.Item label="Tipo de formulário de inscrição">
-                    <Radio.Group
-                      value={formularioInscricaoMode}
-                      onChange={(e) => handleFormularioInscricaoModeChange(e.target.value)}
-                      optionType="button"
-                      buttonStyle="solid"
-                    >
-                      <Radio.Button value="campos">Criar Novo Formulário</Radio.Button>
-                      <Radio.Button value="url">Usar Formulário Existente</Radio.Button>
-                    </Radio.Group>
-                  </Form.Item>
-                </Card>
-                
-                
-                {formularioInscricaoMode === 'url' && (
-                  <Card title={"URL do formulário de inscrição"}>
-                    
-                    
-
+                  )}
+                  <Col md={8}>
                     <Form.Item<FormData>
-                      name="formularioInscricaoUrl"
-                      label="URL do formulário de inscrição"
+                      name="data"
+                      label="Data"
                       rules={[{ required: true }]}
                     >
-                      <Space.Compact style={{ width: "100%" }}>
-                        <Input />
-                        <Button type="default" icon={<SearchOutlined />} loading={verificandoUrl} onClick={handleVerificarUrl}>Verificar</Button>
-                      </Space.Compact>
+                      <DatePicker
+                        style={{ width: "100%" }}
+                        format={"DD/MM/YYYY"}
+                      />
                     </Form.Item>
-                      <strong>Verificações: </strong>
-                    <Flex gap="small" vertical style={{paddingLeft: 12}}>
-                      <Tooltip title="O formulário deve ser público ou compartilhado com ia@secti2.ma.gov.br">
-                        <Space>
-                          {getChecklistIcon(1)} <span>Acesso ao formulário</span>
-                        </Space>
-                      </Tooltip>
-                      <Tooltip title="O formulário deve ter uma planilha de respostas associada">
-                        <Space>
-                          {getChecklistIcon(2)} <span>Planilha vinculada</span>
-                        </Space>
-                      </Tooltip>
-                      <Tooltip title="A planilha deve ser pública ou compartilhada com ia@secti2.ma.gov.br">
-                        <Space>
-                          {getChecklistIcon(3)} <span>Acesso à planilha</span>
-                        </Space>
-                      </Tooltip>
-                    </Flex>
-                  </Card>
-                )}
+                  </Col>
+                  <Col md={8}>
+                    <Form.Item<FormData>
+                      name="horarioInicio"
+                      label="Horário de Início"
+                      rules={[{ required: true }]}
+                    >
+                      <TimePicker
+                        style={{ width: "100%" }}
+                        format={"HH:mm"}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col md={8}>
+                    <Form.Item<FormData>
+                      name="horarioFim"
+                      label="Horário de Término"
+                      rules={[{ required: true }]}
+                    >
+                      <TimePicker
+                        style={{ width: "100%" }}
+                        format={"HH:mm"}
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Card>
 
-                {formularioInscricaoMode === 'campos' && (
-                  <Card title={"Campos para o formulário de inscrição"}>
-                  <Form.List name="camposFormularioInscricao">
-                    {(fields, { add, remove }) => (
-                      <>
-                        {fields.map(({ key, name, ...restField }) => (
-                          <Space
-                            key={key}
-                            style={{ display: "flex", marginBottom: 8 }}
-                            align="baseline"
-                          >
-                            <Form.Item<FormData["camposFormularioInscricao"]>
-                              {...restField}
-                              name={[name, "nome"]}
-                              rules={[
-                                { required: true, message: "Obrigatório" },
-                              ]}
-                            >
-                              <Input
-                                placeholder="Nome do Campo"
-                                disabled={
-                                  key < camposPadroes.obrigatorios.length
-                                }
-                              />
-                            </Form.Item>
-                            <Form.Item<FormData["camposFormularioInscricao"]>
-                              {...restField}
-                              name={[name, "tipo"]}
-                              rules={[
-                                { required: true, message: "Obrigatório" },
-                              ]}
-                            >
-                              <Select
-                                style={{ minWidth: 200 }}
-                                placeholder="Tipo"
-                                options={tiposCampo}
-                                disabled={
-                                  key < camposPadroes.obrigatorios.length
-                                }
-                              />
-                            </Form.Item>
-                            <Form.Item<FormData["camposFormularioInscricao"]>
-                              name={[name, "obrigatorio"]}
-                              valuePropName="checked"
-                              label={""}
-                            >
-                              <Checkbox
-                                disabled={
-                                  key < camposPadroes.obrigatorios.length
-                                }
-                              >
-                                Obrigatório
-                              </Checkbox>
-                            </Form.Item>
-                            {key >= camposPadroes.obrigatorios.length && (
-                              <MinusCircleOutlined
-                                onClick={() => remove(name)}
-                              />
-                            )}
-                          </Space>
-                        ))}
-                        <Form.Item>
-                          <Button
-                            type="dashed"
-                            onClick={() => add()}
-                            block
-                            icon={<PlusOutlined />}
-                          >
-                            Adicionar Campo
-                          </Button>
-                        </Form.Item>
-                      </>
-                    )}
-                  </Form.List>
-                </Card>
-                )}
-                <Flex justify="center" align="center">
-                  <Button disabled={formularioInscricaoMode === 'url' && (!verificationInfo?.temAcessoForm || !verificationInfo?.temPlanilhaVinculada || !verificationInfo?.temAcessoPlanilhaRespostas)} type="primary" htmlType="submit" loading={carregando}>
-                    Registrar
-                  </Button>
-                </Flex>
-              </Space>
-            </Form>
+              <Flex justify="center" align="center">
+                <Button type="primary" htmlType="submit" loading={carregando}>
+                  Registrar
+                </Button>
+              </Flex>
+            </Space>
+          </Form>
         </div>
       </Layout.Content>
     </Layout>
