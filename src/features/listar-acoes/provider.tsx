@@ -38,7 +38,11 @@ export const ListarAcoesProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const acoesFiltradas = useMemo(() => {
     if (!filtroEixo) return todasAcoes;
-    return todasAcoes.filter((acao) => acao.eixo === filtroEixo);
+    return todasAcoes.filter((acao) => {
+      if (acao.eixo === filtroEixo) return true;
+      const auxiliares = acao.eixos_auxiliares?.split(",").map((e) => e.trim()) ?? [];
+      return auxiliares.includes(filtroEixo);
+    });
   }, [todasAcoes, filtroEixo]);
 
   const value: IListarAcoesContext = useMemo(

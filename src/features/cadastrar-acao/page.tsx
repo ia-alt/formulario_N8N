@@ -35,11 +35,12 @@ import { env } from "../../env";
 
 type FormData = Omit<
   DadosCadastroAcao,
-  "data" | "horarioInicio" | "horarioFim"
+  "data" | "horarioInicio" | "horarioFim" | "cidade"
 > & {
   data: dayjs.Dayjs;
   horarioInicio: dayjs.Dayjs;
   horarioFim: dayjs.Dayjs;
+  cidade: string | string[];
 };
 
 const initial: Partial<FormData> = {
@@ -76,6 +77,9 @@ export const CadastrarAcaoPage: FC = () => {
       data: values.data.format("YYYY-MM-DD"),
       horarioInicio: values.horarioInicio.format("HH:mm"),
       horarioFim: values.horarioFim.format("HH:mm"),
+      cidade: Array.isArray(values.cidade)
+        ? values.cidade.join(",")
+        : values.cidade,
     };
     cadastrarAcaoService
       .cadastrarAcao(dados)
@@ -214,9 +218,9 @@ export const CadastrarAcaoPage: FC = () => {
                       <Radio.Group
                         onChange={(e) => {
                           if (e.target.value === "remota") {
-                            form.setFieldsValue({ local: "Remota", cidade: undefined });
+                            form.setFieldsValue({ local: "Remoto", cidade: [] });
                           } else {
-                            form.setFieldsValue({ local: undefined });
+                            form.setFieldsValue({ local: undefined, cidade: undefined });
                           }
                         }}
                       >
@@ -225,7 +229,7 @@ export const CadastrarAcaoPage: FC = () => {
                       </Radio.Group>
                     </Form.Item>
                   </Col>
-                  <Col md={modalidade === "remota" ? 24 : 18}>
+                  <Col md={modalidade === "remota" ? 8 : 18}>
                     <Form.Item<FormData>
                       name="local"
                       label="Local"
@@ -237,13 +241,28 @@ export const CadastrarAcaoPage: FC = () => {
                       />
                     </Form.Item>
                   </Col>
-                  {modalidade !== "remota" && (
-                    <Col md={6}>
-                      <Form.Item<FormData>
-                        name="cidade"
-                        label="Cidade"
-                        rules={[{ required: true }]}
-                      >
+                  <Col md={modalidade === "remota" ? 16 : 6}>
+                    <Form.Item<FormData>
+                      name="cidade"
+                      label={modalidade === "remota" ? "Municípios Abrangidos" : "Cidade"}
+                      rules={[{ required: true, message: "Obrigatório" }]}
+                    >
+                      {modalidade === "remota" ? (
+                        <Select
+                          mode="multiple"
+                          placeholder="Selecione os municípios"
+                          showSearch={{
+                            filterOption: (input, option) =>
+                              removeDiacritics(
+                                (option?.label ?? "").toLowerCase()
+                              ).includes(removeDiacritics(input.toLowerCase())),
+                          }}
+                          options={cidadesMaranhao.map((c) => ({
+                            label: c,
+                            value: c,
+                          }))}
+                        />
+                      ) : (
                         <Select
                           showSearch={{
                             filterOption: (input, option) =>
@@ -252,14 +271,14 @@ export const CadastrarAcaoPage: FC = () => {
                               ).includes(removeDiacritics(input.toLowerCase())),
                           }}
                           placeholder="Selecione uma cidade"
-                          options={cidadesMaranhao.map((cidade) => ({
-                            label: cidade,
-                            value: cidade,
+                          options={cidadesMaranhao.map((c) => ({
+                            label: c,
+                            value: c,
                           }))}
                         />
-                      </Form.Item>
-                    </Col>
-                  )}
+                      )}
+                    </Form.Item>
+                  </Col>
                   <Col md={8}>
                     <Form.Item<FormData>
                       name="data"

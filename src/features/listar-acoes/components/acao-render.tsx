@@ -38,20 +38,31 @@ export const AcaoRender: FC<{ acao: Acao }> = ({ acao }) => {
       >
         <Flex orientation="horizontal" justify="space-between">
           <Flex orientation="vertical" gap={8}>
-            {(acao.eixo || acao.eixos_auxiliares) && (
+            {acao.eixo && (
               <Space>
-                <BookOutlined />{" "}
-                <Typography.Text type="secondary">
-                  {[acao.eixo, acao.eixos_auxiliares]
-                    .filter(Boolean)
-                    .join(" · ")}
-                </Typography.Text>
+                <BookOutlined />
+                <Typography.Text type="secondary">{acao.eixo}</Typography.Text>
+              </Space>
+            )}
+            {acao.eixos_auxiliares && (
+              <Space wrap>
+                {acao.eixos_auxiliares.split(",").map((e) => (
+                  <Tag key={e.trim()} color="default" style={{ fontSize: 11 }}>
+                    {e.trim()}
+                  </Tag>
+                ))}
               </Space>
             )}
             <Space>
               <EnvironmentOutlined />
               <Typography.Text type="secondary">
-                {acao.local} - {acao.municipio}-MA
+                {acao.modalidade?.toLowerCase() === "remota" ||
+                acao.local?.toLowerCase() === "remoto" ||
+                acao.local?.toLowerCase() === "remota"
+                  ? "Remota"
+                  : [acao.local, acao.municipio ? `${acao.municipio}-MA` : ""]
+                      .filter(Boolean)
+                      .join(" - ")}
               </Typography.Text>
             </Space>
             <Space>

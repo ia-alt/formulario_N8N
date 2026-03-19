@@ -19,6 +19,9 @@ export type Acao = {
   data: string; // YYYY-MM-DD
   horarioInicio: string; // HH:MM
   horarioFim: string; // HH:MM
+  impactadosDiretamente?: number;
+  modalidade?: string;
+  publicoAlvo?: string;
 
   linkFormularioInscricao: string;
   linkEditarFormularioInscricao: string;

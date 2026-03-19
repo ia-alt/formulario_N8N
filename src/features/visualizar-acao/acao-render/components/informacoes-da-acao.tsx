@@ -55,7 +55,23 @@ export const InformacoesDaAcao: FC = () => {
             }
             span={2}
           >
-            {acao.local} - {acao.municipio}-MA
+            {acao.modalidade?.toLowerCase() === "remota" ||
+            acao.local?.toLowerCase() === "remoto" ||
+            acao.local?.toLowerCase() === "remota" ? (
+              <>
+                Remota
+                {acao.municipio && (
+                  <>
+                    <br />
+                    {acao.municipio.split(",").map((c) => c.trim()).join(", ")}
+                  </>
+                )}
+              </>
+            ) : (
+              [acao.local, acao.municipio ? `${acao.municipio}-MA` : ""]
+                .filter(Boolean)
+                .join(" - ")
+            )}
           </Descriptions.Item>
         </Descriptions>
       </Card>

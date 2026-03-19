@@ -12,6 +12,7 @@ export type DadosCadastroAcao = {
   quantidadeImpactados: number;
   local: string;
   cidade: string;
+  modalidade: string;
   data: string;
   horarioInicio: string;
   horarioFim: string;
@@ -184,7 +185,7 @@ class AcoesSectiApi {
     const acao: AcaoComInscritos = {
       id: String(raw["Id do evento"] ?? ""),
       titulo: raw["Nome do Evento"] ?? "",
-      eixo: raw["Eixo Responsável "] ?? raw["Eixo Responsavel"] ?? "",
+      eixo: raw["Departamento"] ?? raw["Eixo Responsável "] ?? raw["Eixo Responsavel"] ?? "",
       eixos_auxiliares: raw["Eixos Auxiliares"] ?? "",
       data: raw["Data do Evento"] ?? "",
       cargaHoraria: Number(raw["Carga Horaria "] ?? raw["Carga Horaria"] ?? 0),
@@ -193,11 +194,14 @@ class AcoesSectiApi {
       tipo: raw["Tipo da acão"] ?? raw["Tipo da acao"] ?? "",
       municipio: raw["Município"] ?? raw["Municipio"] ?? "",
       local: raw["Local"] ?? "",
-      status: raw["status"] ?? "ATIVA",
-      linkFormularioInscricao: raw["linkFormularioInscricao"] ?? "",
-      linkEditarFormularioInscricao: raw["linkEditarFormularioInscricao"] ?? "",
-      linkPlanilhaInscritos: raw["linkPlanilhaInscritos"] ?? "",
-      linkGoogleCalendar: raw["linkGoogleCalendar"] ?? "",
+      status: raw["Status"] ?? raw["status"] ?? "ATIVA",
+      impactadosDiretamente: raw["Impactados Diretamente"] != null ? Number(raw["Impactados Diretamente"]) : undefined,
+      modalidade: raw["Modalidade"] ?? "",
+      publicoAlvo: raw["publico alvo"] ?? raw["publico_alvo"] ?? "",
+      linkFormularioInscricao: raw["Link do Form (Publico)"] ?? raw["linkFormularioInscricao"] ?? "",
+      linkEditarFormularioInscricao: raw["Link do Form (Editavel)"] ?? raw["linkEditarFormularioInscricao"] ?? "",
+      linkPlanilhaInscritos: raw["Respostas do Form"] ?? raw["linkPlanilhaInscritos"] ?? "",
+      linkGoogleCalendar: raw["Link do Evento no Calendar"] ?? raw["linkGoogleCalendar"] ?? "",
       inscritos: (raw["inscritos"] ?? []).sort((a: Inscrito, b: Inscrito) => a.nome.localeCompare(b.nome)),
     };
     return acao;

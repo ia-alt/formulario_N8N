@@ -15,7 +15,6 @@ import {
   TeamOutlined,
   BookOutlined,
   DeleteOutlined,
-  CalendarOutlined,
 } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
@@ -53,38 +52,44 @@ export const CabecalhoDaAcao: FC = () => {
         <Col>
           <Space>
             <Button
-              href={acao.linkGoogleCalendar}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <CalendarOutlined />
-              Abrir no Calendar
-            </Button>
-            {acao?.status === "ATIVA" && (
-              <Button
-                danger
-                icon={<DeleteOutlined />}
-                onClick={onCancelar}
-              />
-            )}
+              danger
+              icon={<DeleteOutlined />}
+              onClick={onCancelar}
+            />
           </Space>
         </Col>
       </Row>
       <Row gutter={[16, 16]} align="middle" justify="space-between">
         <Col>
-          <Space orientation="vertical" size={0}>
+          <Space direction="vertical" size={2}>
             <Title level={2} style={{ margin: "8px 0" }}>
               {acao.titulo}
             </Title>
-            <Space>
-              <BookOutlined /> <Text type="secondary">{acao.eixo}</Text>
-            </Space>
+            {acao.eixo && (
+              <Space direction="vertical" size={0}>
+                <Text type="secondary" style={{ fontSize: 11 }}>Eixo Principal</Text>
+                <Space>
+                  <BookOutlined />
+                  <Text type="secondary">{acao.eixo}</Text>
+                </Space>
+              </Space>
+            )}
+            {acao.eixos_auxiliares && (
+              <Space direction="vertical" size={0}>
+                <Text type="secondary" style={{ fontSize: 11 }}>Eixos Auxiliares</Text>
+                <Space wrap>
+                  {acao.eixos_auxiliares.split(",").map((e) => (
+                    <Tag key={e.trim()}>{e.trim()}</Tag>
+                  ))}
+                </Space>
+              </Space>
+            )}
           </Space>
         </Col>
         <Col>
           <Statistic
-            title="Total de Impactados"
-            value={acao.inscritos.length}
+            title="Impactados Diretamente"
+            value={acao.impactadosDiretamente ?? acao.inscritos.length}
             prefix={<TeamOutlined />}
           />
         </Col>
