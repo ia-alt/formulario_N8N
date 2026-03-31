@@ -14,7 +14,14 @@ import { listarAcoesService } from "./service";
 export const ListarAcoesProvider: FC<PropsWithChildren> = ({ children }) => {
   const [todasAcoes, setTodasAcoes] = useState<Acao[]>([]);
   const [filtroEixo, setFiltroEixo] = useState<string | null>(null);
+  const [filtroDataInicio, setFiltroDataInicio] = useState<string | null>(null);
+  const [filtroDataFim, setFiltroDataFim] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(true);
+
+  const setFiltroData = useCallback((inicio: string | null, fim: string | null) => {
+    setFiltroDataInicio(inicio);
+    setFiltroDataFim(fim);
+  }, []);
 
   const fetchAcoes = useCallback(() => {
     setCarregando(true);
@@ -37,13 +44,17 @@ export const ListarAcoesProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [fetchAcoes]);
 
   const acoesFiltradas = useMemo(() => {
-    if (!filtroEixo) return todasAcoes;
     return todasAcoes.filter((acao) => {
-      if (acao.eixo === filtroEixo) return true;
-      const auxiliares = acao.eixos_auxiliares?.split(",").map((e) => e.trim()) ?? [];
-      return auxiliares.includes(filtroEixo);
+      if (acao.status === "CANCELADA") return false;
+      if (filtroEixo) {
+        const auxiliares = acao.eixos_auxiliares?.split(",").map((e) => e.trim()) ?? [];
+        if (acao.eixo !== filtroEixo && !auxiliares.includes(filtroEixo)) return false;
+      }
+      if (filtroDataInicio && acao.data < filtroDataInicio) return false;
+      if (filtroDataFim && acao.data > filtroDataFim) return false;
+      return true;
     });
-  }, [todasAcoes, filtroEixo]);
+  }, [todasAcoes, filtroEixo, filtroDataInicio, filtroDataFim]);
 
   const value: IListarAcoesContext = useMemo(
     () => ({
@@ -51,8 +62,11 @@ export const ListarAcoesProvider: FC<PropsWithChildren> = ({ children }) => {
       carregando,
       filtroEixo,
       setFiltroEixo,
+      filtroDataInicio,
+      filtroDataFim,
+      setFiltroData,
     }),
-    [acoesFiltradas, carregando, filtroEixo]
+    [acoesFiltradas, carregando, filtroEixo, filtroDataInicio, filtroDataFim, setFiltroData]
   );
   return (
     <ListarAcoesContext.Provider value={value}>

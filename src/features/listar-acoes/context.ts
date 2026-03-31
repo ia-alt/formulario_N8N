@@ -6,6 +6,9 @@ const defaultValue: IListarAcoesContext = {
   carregando: true,
   filtroEixo: null,
   setFiltroEixo: () => {},
+  filtroDataInicio: null,
+  filtroDataFim: null,
+  setFiltroData: () => {},
 };
 
 export const ListarAcoesContext = createContext(defaultValue);

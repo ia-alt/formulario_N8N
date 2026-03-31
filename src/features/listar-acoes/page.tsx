@@ -34,10 +34,12 @@ const InnerListarAcoesPage: FC = () => {
           <Flex
             justify="space-between"
             align="center"
+            wrap
+            gap={8}
             style={{ marginBottom: 24 }}
           >
-            <Typography.Title>Ações SECTI</Typography.Title>
-            <Space>
+            <Typography.Title style={{ margin: 0 }}>Ações SECTI</Typography.Title>
+            <Space wrap>
               <Button
                 type="dashed"
                 icon={<EnvironmentOutlined />}
