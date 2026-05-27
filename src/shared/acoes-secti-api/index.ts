@@ -51,7 +51,7 @@ class AcoesSectiApi {
 
   async login(dados: DadosLogin): Promise<RespostaLogin> {
     const url =
-      "https://n8n.atomotriz.com/webhook/7df35919-0693-4443-98bc-bfc75569e2ab";
+      "https://n8n.inova.ma.gov.br/webhook/7df35919-0693-4443-98bc-bfc75569e2ab";
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -73,7 +73,7 @@ class AcoesSectiApi {
   }
 
   async cadastrarAcao(dados: DadosCadastroAcao): Promise<{ id: string }> {
-    const url = "https://n8n.atomotriz.com/webhook/secti/acoes";
+    const url = "https://n8n.inova.ma.gov.br/webhook/secti/acoes";
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -122,7 +122,7 @@ class AcoesSectiApi {
 
   async listarAcoes() {
     const url =
-      "https://n8n.atomotriz.com/webhook/658b9bb1-f7c5-4588-9ae5-f4a1e32576b0";
+      "https://n8n.inova.ma.gov.br/webhook/658b9bb1-f7c5-4588-9ae5-f4a1e32576b0";
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -151,7 +151,7 @@ class AcoesSectiApi {
   }
 
   async detalharAcao(id: string): Promise<AcaoComInscritos | null> {
-    const url = `https://n8n.atomotriz.com/webhook/cd91a1c4-6b8d-44b1-ab67-31fc8b1e7231/secti/acoes/${id}`;
+    const url = `https://n8n.inova.ma.gov.br/webhook/cd91a1c4-6b8d-44b1-ab67-31fc8b1e7231/secti/acoes/${id}`;
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -244,7 +244,7 @@ class AcoesSectiApi {
   }
 
   async cancelarAcao(id: string): Promise<void> {
-    const url = `https://n8n.atomotriz.com/webhook/9df02657-4d34-4975-bc4a-240e7a3e629f/secti/acoes/${id}/cancelar`;
+    const url = `https://n8n.inova.ma.gov.br/webhook/9df02657-4d34-4975-bc4a-240e7a3e629f/secti/acoes/${id}/cancelar`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -263,6 +263,7 @@ class AcoesSectiApi {
     }
   }
 
+  //Nao esta sendo usado
   async verificaGoogleForms(formUrl: string): Promise<FormularioInfo> {
     const url = `https://n8n.atomotriz.com/webhook/4ad5dea8-243f-4dcd-a944-7d8e3a73d1ec`;
     const response = await fetch(url, {
